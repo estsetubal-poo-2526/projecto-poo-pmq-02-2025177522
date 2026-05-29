@@ -252,17 +252,14 @@ public class ModeloJogo {
         tirosTotais = 0;
         tirosAcertados = 0;
         frota = new FrotaInimigo(X_INICIO_FROTA, Y_INICIO_FROTA, 0, LARGURA_ECRA);
-        // Velocidade cresce com a vaga
-        for (int i = 1; i < vaga; i++) {
-            projetisInimigos.clear();
-            projetilJogador.clear();
-            invasorAleatorio = null;
-            barricadas = criarBarricadas();
-            jogador.setX(X_JOGADOR_INICIO);
-            estado = EstadoJogo.A_JOGAR;
-            sortearProximoDisparo();
-            sortearProximoInvasor();
-        }
+        projetisInimigos.clear();
+        projetilJogador.clear();
+        invasorAleatorio = null;
+        barricadas = criarBarricadas();
+        jogador.setX(X_JOGADOR_INICIO);
+        estado = EstadoJogo.A_JOGAR;
+        sortearProximoDisparo();
+        sortearProximoInvasor();
     }
     private void atualizarHiScore() {
         if (jogador.getPontuacao() > hiScore) {
@@ -313,12 +310,8 @@ public class ModeloJogo {
      * @param iniciais até 3 letras do jogador
      */
     public void registarHighScore(String iniciais) {
-        MelhoresPontuacoes hs = new MelhoresPontuacoes(iniciais, jogador.getPontuacao(), vaga);
-        classificacoes.add(hs);
-        Collections.sort(classificacoes);
-        if (classificacoes.size() > 10) {
-            classificacoes = new ArrayList<>(classificacoes.subList(0, 10));
-        }
+        MelhoresPontuacoes.adicionarScore(iniciais, jogador.getPontuacao(), vaga);
+        classificacoes = new ArrayList<>(MelhoresPontuacoes.getClassificacoes());
     }
     public boolean ehNovoRecorde() {
         return classificacoes.isEmpty()

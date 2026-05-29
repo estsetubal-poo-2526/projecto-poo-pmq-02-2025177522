@@ -3,7 +3,6 @@ package game_graphicInterface.Controlador;
 import game_graphicInterface.View.Manager_View;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
 public class Main_Jogo extends Application {
@@ -19,5 +18,8 @@ public class Main_Jogo extends Application {
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
+    }
+    public static void main(String[] args) {
+        launch(args);
     }
 }

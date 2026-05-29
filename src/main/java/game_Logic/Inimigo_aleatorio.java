@@ -1,7 +1,7 @@
 package game_Logic;
 import java.util.Random;
 
-public class Inimigo_aleatorio extends EntidadeJogo {
+public class Inimigo_aleatorio extends Inimigo {
 
     public static final double LARGURA = 52;
     public static final double ALTURA = 24;
@@ -18,9 +18,8 @@ public class Inimigo_aleatorio extends EntidadeJogo {
     private static final Random random = new Random();
 
     public Inimigo_aleatorio(double xInicial, double y, double direcao) {
-        super(xInicial, y, LARGURA, ALTURA);
+        super(xInicial, y, 0);
         this.direcao = direcao;
-        this.vivo = true;
         this.pontosVariaveis = PONTOS_POSSIVEIS[random.nextInt(PONTOS_POSSIVEIS.length)];
     }
 
@@ -35,8 +34,6 @@ public class Inimigo_aleatorio extends EntidadeJogo {
     }
 
     public void destruir() { this.vivo = false; }
-
-    public boolean isVivo() { return vivo; }
     public int getPontosVariaveis() { return pontosVariaveis; }
 }
 

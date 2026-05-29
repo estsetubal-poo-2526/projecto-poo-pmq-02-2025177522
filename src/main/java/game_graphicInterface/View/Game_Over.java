@@ -18,8 +18,10 @@ public class Game_Over extends StackPane {
     private final Button btnJogarNovamente;
     private final Button btnMenu;
     private final Button btnClassificacoes;
+    private Manager_View managerView;
 
-    public Game_Over(ModeloJogo modeloJogo) {
+    public Game_Over(ModeloJogo modeloJogo , Manager_View manager) {
+        this.managerView = manager;
         setPrefSize(800, 600);
         setStyle("-fx-background-color: #000814;");
         //Titulo
@@ -78,9 +80,18 @@ public class Game_Over extends StackPane {
         btnClassificacoes = criarBotao("★  CLASSIFICAÇÕES", "#ff8c00");
         btnMenu = criarBotao("⌂  MENU PRINCIPAL", "#00f5ff");
 
-        // UNIFICADO AQUI: Chamam o método registar() limpo
-        btnJogarNovamente.setOnAction(e -> registar(modeloJogo, campoIniciais));
-        btnMenu.setOnAction(e -> registar(modeloJogo, campoIniciais));
+        btnJogarNovamente.setOnAction(e -> {
+            registar(modeloJogo, campoIniciais);
+            manager.Iniciar();
+        });
+        btnMenu.setOnAction(e -> {
+            registar(modeloJogo, campoIniciais);
+            manager.mostrarMenu();
+        });
+        btnClassificacoes.setOnAction(e -> {
+            registar(modeloJogo, campoIniciais);
+            manager.classificacoes(modeloJogo);
+        });
 
         HBox botoes = new HBox(20, btnJogarNovamente, btnMenu);
         botoes.setAlignment(Pos.CENTER);

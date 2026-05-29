@@ -15,6 +15,7 @@ import javafx.scene.text.Text;
 import javafx.scene.control.Button;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class Tabela_Classificacao extends StackPane {
     private final Button btnVoltar;
@@ -40,11 +41,11 @@ public class Tabela_Classificacao extends StackPane {
         tabela.getChildren().add(cabecalho);
 
 
-        java.util.List<MelhoresPontuacoes> lista = Optional.ofNullable(jogo)
+        List<MelhoresPontuacoes> lista = Optional.ofNullable(jogo)
                 .map(ModeloJogo::getClassificacoes)
-                .stream()                // Converte o Optional num Stream
-                .flatMap(List::stream)   // Transforma a lista numa Stream de MelhoresPontuacoes
-                .toList();               // Coleta de volta para uma nova lista
+                .orElseGet(MelhoresPontuacoes::getClassificacoes)
+                .stream()
+                .collect(Collectors.toList());
 
         if (lista.isEmpty()) {
             Text vazio = new Text("— Sem pontuações registadas —");

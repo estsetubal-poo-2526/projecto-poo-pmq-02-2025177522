@@ -64,6 +64,11 @@ public class MelhoresPontuacoes implements Comparable<MelhoresPontuacoes>, Seria
         return Collections.unmodifiableList(classificacoes);
     }
 
+    public static boolean existeNome(String nomeProcurado) {
+        return getClassificacoes().stream()
+                .anyMatch(score -> score.getNome().equalsIgnoreCase(nomeProcurado));
+    }
+
     @Override
     public int compareTo(MelhoresPontuacoes outro) {
         return Integer.compare(outro.pontuacao, this.pontuacao);

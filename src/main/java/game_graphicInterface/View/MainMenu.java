@@ -1,7 +1,6 @@
 package game_graphicInterface.View;
 
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
@@ -14,29 +13,27 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
-public class Menu extends StackPane {
+public class MainMenu extends StackPane {
     private final Button btnIniciar;
     private final Button btnClassificacoes;
     private final Button btnSair;
 
-    public Menu(Button btnIniciar, Button btnClassificacoes, Button btnSair) {
-        this.btnIniciar = btnIniciar;
-        this.btnClassificacoes = btnClassificacoes;
-        this.btnSair = btnSair;
-
+    public MainMenu() {
         // Título "SYNTHETIC OCEANS"
         VBox tituloBox = new VBox(2);
         tituloBox.setAlignment(Pos.CENTER);
 
         Text linha1 = new Text("SYNTHETIC");
-        linha1.setFont(Font.font("Monospace", FontWeight.BOLD, 58));
+        linha1.setFont(Font.font("Monospace", 58));
         linha1.setFill(Color.web("#00f5ff"));
-        linha1.setStyle("-fx-effect: dropshadow(gaussian, #00f5ff, 20, 0.8, 0, 0);");
+        linha1.setStyle("-fx-effect: dropshadow(gaussian, #00f5ff, 10, 0.2, 0, 0);");
 
         Text linha2 = new Text("OCEANS");
-        linha2.setFont(Font.font("Monospace", FontWeight.BOLD, 58));
+        linha2.setFont(Font.font("Monospace", 58));
         linha2.setFill(Color.web("#bf00ff"));
-        linha2.setStyle("-fx-effect: dropshadow(gaussian, #bf00ff, 20, 0.8, 0, 0);");
+        linha2.setStyle("-fx-effect: dropshadow(gaussian, #bf00ff, 10, 0.2, 0, 0);");
+
+        tituloBox.getChildren().addAll(linha1, linha2);
 
         // Botões
         btnIniciar = criarBotao("▶  INICIAR JOGO", "#00f5ff");
@@ -46,6 +43,8 @@ public class Menu extends StackPane {
         VBox menuBox = new VBox(16, tituloBox, btnIniciar, btnClassificacoes, btnSair);
         menuBox.setAlignment(Pos.CENTER);
         menuBox.setMaxWidth(340);
+        this.setStyle("-fx-background-color: #000814;");
+        this.getChildren().add(menuBox);
     }
 
     private Button criarBotao(String texto, String corNeon) {
@@ -60,7 +59,7 @@ public class Menu extends StackPane {
                         "-fx-border-color: %s;" +
                         "-fx-border-width: 2;" +
                         "-fx-cursor: hand;" +
-                        "-fx-effect: dropshadow(gaussian, %s, 8, 0.5, 0, 0);",
+                        "-fx-effect: dropshadow(gaussian, %s, 10, 0.2, 0, 0);",
                 corNeon, corNeon, corNeon);
         String estiloHover = String.format(
                 "-fx-background-color: %s22;" +
@@ -71,7 +70,7 @@ public class Menu extends StackPane {
                         "-fx-border-color: %s;" +
                         "-fx-border-width: 2;" +
                         "-fx-cursor: hand;" +
-                        "-fx-effect: dropshadow(gaussian, %s, 18, 0.9, 0, 0);",
+                        "-fx-effect: dropshadow(gaussian, %s, 10, 0.2, 0, 0);",
                 corNeon, corNeon, corNeon);
         btn.setStyle(estilo);
         btn.setOnMouseEntered(e -> btn.setStyle(estiloHover));

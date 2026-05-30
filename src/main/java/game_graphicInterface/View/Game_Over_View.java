@@ -24,7 +24,7 @@ import javafx.scene.text.Text;
  * que nunca é feito mais do que uma vez, independentemente do botão
  * que o jogador prime.
  */
-public class Game_Over extends StackPane {
+public class Game_Over_View extends StackPane {
 
     private final Button btnJogarNovamente;
     private final Button btnMenu;
@@ -36,7 +36,7 @@ public class Game_Over extends StackPane {
      * @param modeloJogo modelo com as estatísticas da partida
      * @param manager    gestor de navegação
      */
-    public Game_Over(ModeloJogo modeloJogo, Manager_View manager) {
+    public Game_Over_View(ModeloJogo modeloJogo, Manager_View manager) {
         setPrefSize(800, 600);
         setStyle("-fx-background-color: #000814;");
 

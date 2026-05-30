@@ -1,4 +1,4 @@
-package game_graphicInterface.Controlador;
+package game_graphicInterface.View;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -11,11 +11,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
-public class Controlador_Jogo extends StackPane {
+public class Controlos_View extends StackPane {
 
     private final Button btnVoltar;
 
-    public Controlador_Jogo () {
+    public Controlos_View() {
         setPrefSize(800, 600);
         setStyle("-fx-background-color: #000814;");
 

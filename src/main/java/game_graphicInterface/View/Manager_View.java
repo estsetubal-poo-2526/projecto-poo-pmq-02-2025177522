@@ -24,6 +24,7 @@ public class Manager_View {
         menu.getBtnIniciar().setOnAction(e-> iniciar());
         menu.getBtnClassificacoes().setOnAction(e->classificacoes(null));
         menu.getBtnSair().setOnAction(e -> stage.close());
+        menu.getBtnControlos().setOnAction(e -> mostrarControlos());
         root.getChildren().setAll(menu);
     }
     public void iniciar()
@@ -39,9 +40,15 @@ public class Manager_View {
         root.getChildren().setAll(table);
     }
     public void mostrarGameOver(ModeloJogo modeloJogo) {
-        Game_Over ecraGameOver = new Game_Over(modeloJogo, this);
+        Game_Over_View ecraGameOver = new Game_Over_View(modeloJogo, this);
         root.getChildren().setAll(ecraGameOver);
     }
-        // SE a tua Manager_View usa uma variável root (ex: rootPane), fazes assim:
+    public void mostrarControlos() {
+        Controlos_View ctrl =
+                new Controlos_View();
+        ctrl.getBtnVoltar().setOnAction(e -> mostrarMenu());
+        root.getChildren().setAll(ctrl);
+    }
+
     public Scene getScene() { return scene; }
 }

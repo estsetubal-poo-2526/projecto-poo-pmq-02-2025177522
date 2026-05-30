@@ -3,60 +3,182 @@ package game_graphicInterface.View;
 import game_Logic.*;
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Pos;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
+import javafx.scene.shape.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Vista principal do jogo.
+ *
+ * Usa um Pane JavaFX em vez de Canvas — cada entidade do jogo
+ * é representada por uma forma JavaFX (Rectangle, Ellipse, etc.)
+ * que é atualizada a cada frame com a posição do modelo.
+ *
+ * O menu de pausa (Pause_Menu_View) é sobreposto via StackPane
+ * e a sua visibilidade é controlada pelo estado do jogo.
+ */
 public class Game_View extends StackPane {
 
     private static final double LARGURA = 800;
     private static final double ALTURA  = 600;
 
-    // Paleta neon
+    // ---- Paleta neon ----
     private static final Color COR_JOGADOR    = Color.web("#00f5ff");
     private static final Color COR_PROJETIL_J = Color.web("#00ffcc");
     private static final Color COR_PROJETIL_I = Color.web("#ff4466");
+    private static final Color COR_PROJETIL_I_RETO = Color.web("#aaff00");
     private static final Color COR_INIMIGO_F  = Color.web("#00f5ff");
     private static final Color COR_INIMIGO_M  = Color.web("#bf00ff");
     private static final Color COR_INIMIGO_T  = Color.web("#ff8c00");
     private static final Color COR_INVASOR    = Color.web("#ffd700");
-    private static final Color COR_HUD        = Color.web("#00f5ff");
 
     private final ModeloJogo modelo;
     private final Manager_View managerView;
-    private final Canvas canvas;
-    private final GraphicsContext gc;
-    private AnimationTimer gameLoop;
 
+    /** Pane principal onde todas as entidades do jogo são desenhadas. */
+    private final Pane campoJogo;
+
+    /** Menu de pausa sobreposto ao campoJogo. */
+    private final Pause_Menu_View menuPausa;
+
+    private AnimationTimer gameLoop;
     private final Set<KeyCode> teclasAtivas = new HashSet<>();
 
+    // ---- Formas JavaFX que representam as entidades ----
+    // Jogador
+    private final Rectangle corpoJogador;
+    private final Rectangle torreJogador;
+    private final Rectangle canhaoJogador;
+    private final Ellipse  aureolJogador;
+
+    // HUD (textos)
+    private final Text txtScore;
+    private final Text txtHiScore;
+    private final Text txtVaga;
+    private final Text txtVidas;
+
+    // Overlay de vaga concluída
+    private final Text txtVagaConcluida;
+    private final Text txtPrecisao;
+    private final Text txtProximaVaga;
+    private final Rectangle overlayVaga;
+
+    // Controlo de transição
     private boolean emTransicao = false;
     private int framesTransicao = 0;
     private static final int DURACAO_TRANSICAO = 120;
 
+    // =========================================================
+    //  CONSTRUTOR
+    // =========================================================
+
     public Game_View(ModeloJogo modelo, Manager_View managerView) {
         this.modelo      = modelo;
         this.managerView = managerView;
-        this.canvas      = new Canvas(LARGURA, ALTURA);
-        this.gc          = canvas.getGraphicsContext2D();
 
-        getChildren().add(canvas);
+        // --- Campo de jogo (Pane) ---
+        campoJogo = new Pane();
+        campoJogo.setPrefSize(LARGURA, ALTURA);
+        campoJogo.setStyle("-fx-background-color: #000814;");
+
+        // Fundo gradiente
+        Rectangle fundo = new Rectangle(LARGURA, ALTURA);
+        fundo.setFill(new LinearGradient(
+                0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
+                new Stop(0.0, Color.web("#000814")),
+                new Stop(0.5, Color.web("#001233")),
+                new Stop(1.0, Color.web("#000814"))
+        ));
+        campoJogo.getChildren().add(fundo);
+
+        // Linha divisória inferior
+        Line linhaDivisoria = new Line(0, ALTURA - 48, LARGURA, ALTURA - 48);
+        linhaDivisoria.setStroke(Color.web("#00f5ff22"));
+        linhaDivisoria.setStrokeWidth(1);
+        campoJogo.getChildren().add(linhaDivisoria);
+
+        // --- Jogador ---
+        aureolJogador = new Ellipse();
+        aureolJogador.setFill(Color.web("#00f5ff18"));
+
+        corpoJogador = new Rectangle();
+        corpoJogador.setFill(COR_JOGADOR);
+        corpoJogador.setArcWidth(10);
+        corpoJogador.setArcHeight(10);
+
+        torreJogador = new Rectangle();
+        torreJogador.setFill(COR_JOGADOR);
+        torreJogador.setArcWidth(6);
+        torreJogador.setArcHeight(6);
+
+        canhaoJogador = new Rectangle();
+        canhaoJogador.setFill(Color.web("#00ffcc"));
+
+        campoJogo.getChildren().addAll(aureolJogador, corpoJogador, torreJogador, canhaoJogador);
+
+        // --- HUD ---
+        txtScore = criarTextoHUD("000000", 10, 38, COR_JOGADOR, 14, true);
+        Text lblScore = criarTextoHUD("SCORE", 10, 20, Color.web("#ffffff88"), 14, false);
+
+        txtHiScore = criarTextoHUD("000000", LARGURA / 2 - 36, 38, Color.web("#ff8c00"), 14, true);
+        Text lblHiScore = criarTextoHUD("HI-SCORE", LARGURA / 2 - 50, 20, Color.web("#ffffff88"), 14, false);
+
+        txtVaga = criarTextoHUD("1", LARGURA - 90, 38, COR_JOGADOR, 14, true);
+        Text lblVaga = criarTextoHUD("VAGA", LARGURA - 90, 20, Color.web("#ffffff88"), 14, false);
+
+        txtVidas = criarTextoHUD("VIDAS", 10, ALTURA - 10, Color.web("#ffffff88"), 12, false);
+
+        campoJogo.getChildren().addAll(
+                lblScore, txtScore,
+                lblHiScore, txtHiScore,
+                lblVaga, txtVaga,
+                txtVidas
+        );
+
+        // --- Overlay de vaga concluída ---
+        overlayVaga = new Rectangle(LARGURA, ALTURA, Color.color(0, 0, 0, 0.55));
+        overlayVaga.setVisible(false);
+
+        txtVagaConcluida = criarTextoOverlay("✦ VAGA CONCLUÍDA! ✦", 32, "#00f5ff", ALTURA / 2 - 30);
+        txtPrecisao      = criarTextoOverlay("Precisão: 0%",         20, "#00ff88", ALTURA / 2 + 10);
+        txtProximaVaga   = criarTextoOverlay("A preparar vaga 2...", 14, "#aaaaaa", ALTURA / 2 + 44);
+
+        campoJogo.getChildren().addAll(overlayVaga, txtVagaConcluida, txtPrecisao, txtProximaVaga);
+
+        // --- Menu de pausa ---
+        menuPausa = new Pause_Menu_View();
+        menuPausa.getBtnRetomar().setOnAction(e -> {
+            modelo.retomar();
+            requestFocus();
+        });
+        menuPausa.getBtnDesistir().setOnAction(e -> {
+            parar();
+            managerView.mostrarMenu();
+        });
+
+        // --- Montar tudo no StackPane ---
+        getChildren().addAll(campoJogo, menuPausa);
         setAlignment(Pos.CENTER);
         setFocusTraversable(true);
 
         configurarInput();
         construirGameLoop();
     }
+
+    // =========================================================
+    //  ARRANQUE E PARAGEM
+    // =========================================================
 
     public void iniciar() {
         requestFocus();
@@ -76,7 +198,7 @@ public class Game_View extends StackPane {
             teclasAtivas.add(e.getCode());
             if (e.getCode() == KeyCode.ESCAPE || e.getCode() == KeyCode.P) {
                 EstadoJogo est = modelo.getEstado();
-                if (est == EstadoJogo.A_JOGAR)  modelo.pausar();
+                if (est == EstadoJogo.A_JOGAR)   modelo.pausar();
                 else if (est == EstadoJogo.PAUSADO) modelo.retomar();
             }
         });
@@ -106,18 +228,331 @@ public class Game_View extends StackPane {
                 if (modelo.getEstado() == EstadoJogo.A_JOGAR)
                     modelo.atualizar();
 
-                renderizar();
+                atualizar();
                 verificarTransicoes();
             }
         };
     }
+
+    // =========================================================
+    //  ATUALIZAÇÃO (substitui o renderizar() do Canvas)
+    // =========================================================
+
+    /**
+     * Atualiza todas as formas JavaFX com as posições atuais do modelo.
+     * O JavaFX redesenha automaticamente o que for necessário.
+     */
+    private void atualizar() {
+        atualizarJogador();
+        atualizarFrota();
+        atualizarInvasorAleatorio();
+        atualizarBarricadas();
+        atualizarProjetisJogador();
+        atualizarProjetisInimigos();
+        atualizarHUD();
+        atualizarOverlayVaga();
+
+        // Menu de pausa — basta controlar a visibilidade
+        menuPausa.setVisible(modelo.getEstado() == EstadoJogo.PAUSADO);
+    }
+
+    // =========================================================
+    //  ATUALIZAÇÃO DE CADA ENTIDADE
+    // =========================================================
+
+    private void atualizarJogador() {
+        Player p = modelo.getJogador();
+        if (!p.isAtivo()) {
+            corpoJogador.setVisible(false);
+            torreJogador.setVisible(false);
+            canhaoJogador.setVisible(false);
+            aureolJogador.setVisible(false);
+            return;
+        }
+
+        double x = p.getX(), y = p.getY();
+        double w = p.getLargura(), h = p.getAltura();
+
+        // Auréola
+        aureolJogador.setCenterX(x + w / 2);
+        aureolJogador.setCenterY(y + h / 2);
+        aureolJogador.setRadiusX(w / 2 + 4);
+        aureolJogador.setRadiusY(h / 2 + 4);
+
+        // Corpo
+        corpoJogador.setX(x);
+        corpoJogador.setY(y + h * 0.3);
+        corpoJogador.setWidth(w);
+        corpoJogador.setHeight(h * 0.55);
+
+        // Torre
+        torreJogador.setX(x + w * 0.35);
+        torreJogador.setY(y + h * 0.05);
+        torreJogador.setWidth(w * 0.30);
+        torreJogador.setHeight(h * 0.35);
+
+        // Canhão
+        canhaoJogador.setX(x + w * 0.46);
+        canhaoJogador.setY(y - h * 0.05);
+        canhaoJogador.setWidth(w * 0.08);
+        canhaoJogador.setHeight(h * 0.18);
+    }
+
+    private void atualizarFrota() {
+        // Remove formas de inimigos anteriores e redesenha os vivos
+        // (estratégia simples: limpa e recria apenas os nós de inimigos)
+        campoJogo.getChildren().removeIf(n -> Boolean.TRUE.equals(n.getUserData()) );
+
+        for (Inimigo inimigo : modelo.getFrota().getVivos()) {
+            Color cor = corInimigo(inimigo);
+            double x = inimigo.getX(), y = inimigo.getY();
+            double w = inimigo.getLargura(), h = inimigo.getAltura();
+
+            // Auréola
+            Ellipse aureola = new Ellipse(x + w / 2, y + h / 2, w / 2 + 3, h / 2 + 3);
+            aureola.setFill(Color.color(cor.getRed(), cor.getGreen(), cor.getBlue(), 0.10));
+            aureola.setUserData(true);
+
+            // Corpo
+            Rectangle corpo = new Rectangle(x + w * 0.1, y + h * 0.15, w * 0.8, h * 0.7);
+            corpo.setFill(cor);
+            corpo.setArcWidth(8);
+            corpo.setArcHeight(8);
+            corpo.setUserData(true);
+
+            // Tentáculos
+            Line t1 = criarTentaculo(x, y + h * 0.35, x + w * 0.15, y + h * 0.5, cor);
+            Line t2 = criarTentaculo(x + w, y + h * 0.35, x + w * 0.85, y + h * 0.5, cor);
+            Line t3 = criarTentaculo(x + w * 0.05, y + h * 0.65, x + w * 0.18, y + h * 0.5, cor);
+            Line t4 = criarTentaculo(x + w * 0.95, y + h * 0.65, x + w * 0.82, y + h * 0.5, cor);
+
+            // Olhos
+            Ellipse olhoEsq = new Ellipse(x + w * 0.35, y + h * 0.39, w * 0.07, h * 0.11);
+            olhoEsq.setFill(Color.web("#000814"));
+            olhoEsq.setUserData(true);
+
+            Ellipse olhoDir = new Ellipse(x + w * 0.65, y + h * 0.39, w * 0.07, h * 0.11);
+            olhoDir.setFill(Color.web("#000814"));
+            olhoDir.setUserData(true);
+
+            Ellipse brilhoEsq = new Ellipse(x + w * 0.345, y + h * 0.375, w * 0.045, h * 0.075);
+            brilhoEsq.setFill(cor.brighter());
+            brilhoEsq.setUserData(true);
+
+            Ellipse brilhoDir = new Ellipse(x + w * 0.645, y + h * 0.375, w * 0.045, h * 0.075);
+            brilhoDir.setFill(cor.brighter());
+            brilhoDir.setUserData(true);
+
+            campoJogo.getChildren().addAll(
+                    aureola, corpo, t1, t2, t3, t4,
+                    olhoEsq, olhoDir, brilhoEsq, brilhoDir
+            );
+        }
+    }
+
+    private Line criarTentaculo(double x1, double y1, double x2, double y2, Color cor) {
+        Line l = new Line(x1, y1, x2, y2);
+        l.setStroke(cor);
+        l.setStrokeWidth(1.5);
+        l.setUserData(true);
+        return l;
+    }
+
+    private Color corInimigo(Inimigo i) {
+        if (i instanceof Inimigo_Tras) return COR_INIMIGO_T;
+        if (i instanceof Inimigo_Meio) return COR_INIMIGO_M;
+        return COR_INIMIGO_F;
+    }
+
+    private void atualizarInvasorAleatorio() {
+        campoJogo.getChildren().removeIf(n -> "invasor".equals(n.getUserData()));
+
+        Inimigo_aleatorio inv = modelo.getInvasorAleatorio();
+        if (inv == null || !inv.isVivo()) return;
+
+        double x = inv.getX(), y = inv.getY();
+        double w = inv.getLargura(), h = inv.getAltura();
+
+        Ellipse aureola = new Ellipse(x + w / 2, y + h / 2, w / 2 + 6, h / 2 + 6);
+        aureola.setFill(Color.web("#ffd70018"));
+        aureola.setUserData("invasor");
+
+        Ellipse corpo = new Ellipse(x + w / 2, y + h * 0.55, w / 2, h * 0.25);
+        corpo.setFill(COR_INVASOR);
+        corpo.setUserData("invasor");
+
+        Ellipse cabeca = new Ellipse(x + w * 0.5, y + h * 0.275, w * 0.3, h * 0.2);
+        cabeca.setFill(Color.web("#fffacd"));
+        cabeca.setUserData("invasor");
+
+        Text pontos = new Text("?");
+        pontos.setFont(Font.font("Monospace", FontWeight.BOLD, 11));
+        pontos.setFill(COR_INVASOR);
+        pontos.setX(x + w * 0.44);
+        pontos.setY(y - 4);
+        pontos.setUserData("invasor");
+
+        campoJogo.getChildren().addAll(aureola, corpo, cabeca, pontos);
+    }
+
+    private void atualizarBarricadas() {
+        campoJogo.getChildren().removeIf(n -> "barricada".equals(n.getUserData()));
+
+        for (Barricadas b : modelo.getBarricadas()) {
+            double pct = b.getPercentagemIntegridade();
+            Color cor = interpolarCor(pct);
+            double x = b.getX(), y = b.getY();
+            double w = b.getLargura(), h = b.getAltura();
+
+            // Auréola
+            Rectangle aureola = new Rectangle(x - 3, y - 3, w + 6, h + 6);
+            aureola.setFill(Color.color(cor.getRed(), cor.getGreen(), cor.getBlue(), 0.12));
+            aureola.setArcWidth(10);
+            aureola.setArcHeight(10);
+            aureola.setUserData("barricada");
+
+            // Corpo
+            Rectangle corpo = new Rectangle(x, y, w, h);
+            corpo.setFill(cor);
+            corpo.setArcWidth(8);
+            corpo.setArcHeight(8);
+            corpo.setUserData("barricada");
+
+            campoJogo.getChildren().addAll(aureola, corpo);
+
+            // Rachas de dano
+            if (pct < 0.66) {
+                Line racha1 = new Line(x + w * 0.3, y, x + w * 0.15, y + h);
+                racha1.setStroke(Color.color(0, 0, 0, 0.5));
+                racha1.setStrokeWidth(1.5);
+                racha1.setUserData("barricada");
+                campoJogo.getChildren().add(racha1);
+            }
+            if (pct < 0.33) {
+                Line racha2 = new Line(x + w * 0.65, y, x + w * 0.80, y + h);
+                racha2.setStroke(Color.color(0, 0, 0, 0.5));
+                racha2.setStrokeWidth(1.5);
+                racha2.setUserData("barricada");
+                campoJogo.getChildren().add(racha2);
+            }
+        }
+    }
+
+    private Color interpolarCor(double pct) {
+        if (pct > 0.5) {
+            double t = (pct - 0.5) * 2.0;
+            return Color.color(1.0 - t, 1.0, 0.2 * t + 0.1, 1.0);
+        } else {
+            double t = pct * 2.0;
+            return Color.color(1.0, t, 0.1, 1.0);
+        }
+    }
+
+    private void atualizarProjetisJogador() {
+        campoJogo.getChildren().removeIf(n -> "projetil_j".equals(n.getUserData()));
+
+        for (Projetil_jogador p : modelo.getProjetisJogador()) {
+            if (!p.isAtivo()) continue;
+            double x = p.getX(), y = p.getY();
+            double w = p.getLargura(), h = p.getAltura();
+
+            // Brilho
+            Rectangle brilho = new Rectangle(x - 1, y + 4, w + 2, h);
+            brilho.setFill(Color.web("#00ffcc44"));
+            brilho.setArcWidth(3);
+            brilho.setArcHeight(3);
+            brilho.setUserData("projetil_j");
+
+            // Projétil
+            Rectangle projetil = new Rectangle(x, y, w, h * 0.7);
+            projetil.setFill(COR_PROJETIL_J);
+            projetil.setArcWidth(3);
+            projetil.setArcHeight(3);
+            projetil.setUserData("projetil_j");
+
+            campoJogo.getChildren().addAll(brilho, projetil);
+        }
+    }
+
+    private void atualizarProjetisInimigos() {
+        campoJogo.getChildren().removeIf(n -> "projetil_i".equals(n.getUserData()));
+
+        for (Projetil_Inimigo p : modelo.getProjetisInimigos()) {
+            if (!p.isAtivo()) continue;
+            double x = p.getX(), y = p.getY();
+            double w = p.getLargura(), h = p.getAltura();
+
+            if (p.getTipoTrajeto() == Projetil_Inimigo.TipoTrajeto.ZIGZAG) {
+                Ellipse brilho = new Ellipse(x + w / 2, y + h / 2, w / 2 + 2, h / 2 + 2);
+                brilho.setFill(Color.web("#ff446644"));
+                brilho.setUserData("projetil_i");
+
+                Polygon losango = new Polygon(
+                        x + w / 2, y,
+                        x + w,     y + h / 2,
+                        x + w / 2, y + h,
+                        x,         y + h / 2
+                );
+                losango.setFill(COR_PROJETIL_I);
+                losango.setUserData("projetil_i");
+
+                campoJogo.getChildren().addAll(brilho, losango);
+            } else {
+                Ellipse brilho = new Ellipse(x + w / 2, y + h / 2, w / 2 + 2, h / 2 + 2);
+                brilho.setFill(Color.web("#aaff0044"));
+                brilho.setUserData("projetil_i");
+
+                Ellipse projetil = new Ellipse(x + w / 2, y + h / 2, w / 2, h / 2);
+                projetil.setFill(COR_PROJETIL_I_RETO);
+                projetil.setUserData("projetil_i");
+
+                campoJogo.getChildren().addAll(brilho, projetil);
+            }
+        }
+    }
+
+    // =========================================================
+    //  HUD
+    // =========================================================
+
+    private void atualizarHUD() {
+        txtScore.setText(String.format("%06d", modelo.getJogador().getPontuacao()));
+        txtHiScore.setText(String.format("%06d", modelo.gethiScore()));
+        txtVaga.setText(String.valueOf(modelo.getVaga()));
+        txtVidas.setText("VIDAS: " + modelo.getJogador().getVidas());
+    }
+
+    // =========================================================
+    //  OVERLAY DE VAGA CONCLUÍDA
+    // =========================================================
+
+    private void atualizarOverlayVaga() {
+        boolean mostrar = modelo.getEstado() == EstadoJogo.TRANSICAO_VAGA;
+        overlayVaga.setVisible(mostrar);
+        txtVagaConcluida.setVisible(mostrar);
+        txtPrecisao.setVisible(mostrar);
+        txtProximaVaga.setVisible(mostrar);
+
+        if (mostrar) {
+            txtPrecisao.setText("Precisão: " + modelo.getPrecisaoTiro() + "%");
+            txtProximaVaga.setText("A preparar vaga " + (modelo.getVaga() + 1) + "...");
+            // Centrar os textos
+            centrarTexto(txtVagaConcluida, ALTURA / 2 - 30);
+            centrarTexto(txtPrecisao,      ALTURA / 2 + 10);
+            centrarTexto(txtProximaVaga,   ALTURA / 2 + 44);
+        }
+    }
+
+    // =========================================================
+    //  TRANSIÇÕES
+    // =========================================================
 
     private void verificarTransicoes() {
         EstadoJogo estado = modelo.getEstado();
 
         if (estado == EstadoJogo.GAME_OVER) {
             parar();
-            mostrarGameOver();
+            managerView.mostrarGameOver(modelo);
             return;
         }
 
@@ -135,274 +570,32 @@ public class Game_View extends StackPane {
     }
 
     // =========================================================
-    //  RENDERIZAÇÃO
+    //  UTILITÁRIOS
     // =========================================================
 
-    private void renderizar() {
-        desenharFundo();
-        desenharBarricadas();
-        desenharFrota();
-        desenharInvasorAleatorio();
-        desenharProjetisInimigos();
-        desenharProjetisJogador();
-        desenharJogador();
-        desenharHUD();
-
-        EstadoJogo estado = modelo.getEstado();
-        if (estado == EstadoJogo.PAUSADO)        desenharOverlayPausa();
-        if (estado == EstadoJogo.TRANSICAO_VAGA) desenharOverlayVaga();
+    private Text criarTextoHUD(String conteudo, double x, double y, Color cor, int tamanho, boolean bold) {
+        Text t = new Text(conteudo);
+        t.setFont(bold
+                ? Font.font("Monospace", FontWeight.BOLD, tamanho)
+                : Font.font("Monospace", tamanho));
+        t.setFill(cor);
+        t.setX(x);
+        t.setY(y);
+        return t;
     }
 
-    private void desenharFundo() {
-        LinearGradient grad = new LinearGradient(
-                0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
-                new Stop(0.0, Color.web("#000814")),
-                new Stop(0.5, Color.web("#001233")),
-                new Stop(1.0, Color.web("#000814"))
-        );
-        gc.setFill(grad);
-        gc.fillRect(0, 0, LARGURA, ALTURA);
-
-        gc.setStroke(Color.web("#00f5ff22"));
-        gc.setLineWidth(1);
-        gc.strokeLine(0, ALTURA - 48, LARGURA, ALTURA - 48);
+    private Text criarTextoOverlay(String conteudo, int tamanho, String corHex, double y) {
+        Text t = new Text(conteudo);
+        t.setFont(Font.font("Monospace", FontWeight.BOLD, tamanho));
+        t.setFill(Color.web(corHex));
+        t.setY(y);
+        t.setVisible(false);
+        // APAGAR A LINHA QUE ESTAVA AQUI!
+        return t;
     }
 
-    private void desenharJogador() {
-        Player p = modelo.getJogador();
-        if (!p.isAtivo()) return;
-
-        double x = p.getX(), y = p.getY();
-        double w = p.getLargura(), h = p.getAltura();
-
-        gc.setFill(Color.web("#00f5ff18"));
-        gc.fillOval(x - 4, y - 4, w + 8, h + 8);
-
-        gc.setFill(COR_JOGADOR);
-        gc.fillRoundRect(x, y + h * 0.3, w, h * 0.55, 10, 10);
-        gc.fillRoundRect(x + w * 0.35, y + h * 0.05, w * 0.30, h * 0.35, 6, 6);
-
-        gc.setFill(Color.web("#00ffcc"));
-        gc.fillRect(x + w * 0.46, y - h * 0.05, w * 0.08, h * 0.18);
-
-        gc.setFill(Color.web("#000814"));
-        gc.fillOval(x + w * 0.38, y + h * 0.12, w * 0.12, h * 0.14);
-        gc.setFill(Color.web("#00f5ff66"));
-        gc.fillOval(x + w * 0.40, y + h * 0.14, w * 0.08, h * 0.10);
-    }
-
-    private void desenharFrota() {
-        for (Inimigo inimigo : modelo.getFrota().getVivos()) {
-            Color cor = corInimigo(inimigo);
-            double x = inimigo.getX(), y = inimigo.getY();
-            double w = inimigo.getLargura(), h = inimigo.getAltura();
-
-            gc.setFill(Color.color(cor.getRed(), cor.getGreen(), cor.getBlue(), 0.10));
-            gc.fillOval(x - 3, y - 3, w + 6, h + 6);
-
-            gc.setFill(cor);
-            gc.fillRoundRect(x + w * 0.1, y + h * 0.15, w * 0.8, h * 0.7, 8, 8);
-
-            gc.setStroke(cor);
-            gc.setLineWidth(1.5);
-            gc.strokeLine(x, y + h * 0.35, x + w * 0.15, y + h * 0.5);
-            gc.strokeLine(x + w, y + h * 0.35, x + w * 0.85, y + h * 0.5);
-            gc.strokeLine(x + w * 0.05, y + h * 0.65, x + w * 0.18, y + h * 0.5);
-            gc.strokeLine(x + w * 0.95, y + h * 0.65, x + w * 0.82, y + h * 0.5);
-
-            gc.setFill(Color.web("#000814"));
-            gc.fillOval(x + w * 0.28, y + h * 0.28, w * 0.14, h * 0.22);
-            gc.fillOval(x + w * 0.58, y + h * 0.28, w * 0.14, h * 0.22);
-            gc.setFill(cor.brighter());
-            gc.fillOval(x + w * 0.30, y + h * 0.30, w * 0.09, h * 0.15);
-            gc.fillOval(x + w * 0.60, y + h * 0.30, w * 0.09, h * 0.15);
-        }
-    }
-
-    private Color corInimigo(Inimigo i) {
-        if (i instanceof Inimigo_Tras) return COR_INIMIGO_T;
-        if (i instanceof Inimigo_Meio) return COR_INIMIGO_M;
-        return COR_INIMIGO_F;
-    }
-
-    private void desenharInvasorAleatorio() {
-        Inimigo_aleatorio inv = modelo.getInvasorAleatorio();
-        if (inv == null || !inv.isVivo()) return;
-
-        double x = inv.getX(), y = inv.getY();
-        double w = inv.getLargura(), h = inv.getAltura();
-
-        gc.setFill(Color.web("#ffd70018"));
-        gc.fillOval(x - 6, y - 6, w + 12, h + 12);
-
-        gc.setFill(COR_INVASOR);
-        gc.fillOval(x, y + h * 0.3, w, h * 0.5);
-        gc.setFill(Color.web("#fffacd"));
-        gc.fillOval(x + w * 0.2, y + h * 0.05, w * 0.6, h * 0.45);
-
-        gc.setFill(Color.web("#00f5ff"));
-        gc.fillOval(x + w * 0.18, y + h * 0.55, w * 0.08, h * 0.15);
-        gc.fillOval(x + w * 0.45, y + h * 0.60, w * 0.08, h * 0.15);
-        gc.fillOval(x + w * 0.72, y + h * 0.55, w * 0.08, h * 0.15);
-
-        gc.setFill(COR_INVASOR);
-        gc.setFont(Font.font("Monospace", FontWeight.BOLD, 11));
-        gc.fillText("?", x + w * 0.44, y - 4);
-    }
-
-    private void desenharBarricadas() {
-        for (Barricadas b : modelo.getBarricadas()) {
-            double pct = b.getPercentagemIntegridade();
-            Color cor = interpolarCor(pct);
-            double x = b.getX(), y = b.getY();
-            double w = b.getLargura(), h = b.getAltura();
-
-            gc.setFill(Color.color(cor.getRed(), cor.getGreen(), cor.getBlue(), 0.12));
-            gc.fillRoundRect(x - 3, y - 3, w + 6, h + 6, 10, 10);
-
-            gc.setFill(cor);
-            gc.fillRoundRect(x, y, w, h, 8, 8);
-
-            if (pct < 0.66) {
-                gc.setStroke(Color.color(0, 0, 0, 0.5));
-                gc.setLineWidth(1.5);
-                gc.strokeLine(x + w * 0.3, y, x + w * 0.15, y + h);
-            }
-            if (pct < 0.33) {
-                gc.strokeLine(x + w * 0.65, y, x + w * 0.80, y + h);
-            }
-        }
-    }
-
-    private Color interpolarCor(double pct) {
-        if (pct > 0.5) {
-            double t = (pct - 0.5) * 2.0;
-            return Color.color(1.0 - t, 1.0, 0.2 * t + 0.1, 1.0);
-        } else {
-            double t = pct * 2.0;
-            return Color.color(1.0, t, 0.1, 1.0);
-        }
-    }
-
-    private void desenharProjetisJogador() {
-        for (Projetil_jogador p : modelo.getProjetisJogador()) {
-            if (!p.isAtivo()) continue;
-            double x = p.getX(), y = p.getY();
-            double w = p.getLargura(), h = p.getAltura();
-
-            gc.setFill(Color.web("#00ffcc44"));
-            gc.fillRoundRect(x - 1, y + 4, w + 2, h, 3, 3);
-            gc.setFill(COR_PROJETIL_J);
-            gc.fillRoundRect(x, y, w, h * 0.7, 3, 3);
-        }
-    }
-
-    private void desenharProjetisInimigos() {
-        for (Projetil_Inimigo p : modelo.getProjetisInimigos()) {
-            if (!p.isAtivo()) continue;
-            double x = p.getX(), y = p.getY();
-            double w = p.getLargura(), h = p.getAltura();
-
-            if (p.getTipoTrajeto() == Projetil_Inimigo.TipoTrajeto.ZIGZAG) {
-                gc.setFill(Color.web("#ff446644"));
-                gc.fillOval(x - 2, y - 2, w + 4, h + 4);
-                gc.setFill(COR_PROJETIL_I);
-                double[] xs = {x + w / 2, x + w, x + w / 2, x};
-                double[] ys = {y, y + h / 2, y + h, y + h / 2};
-                gc.fillPolygon(xs, ys, 4);
-            } else {
-                gc.setFill(Color.web("#aaff0044"));
-                gc.fillOval(x - 2, y - 2, w + 4, h + 4);
-                gc.setFill(Color.web("#aaff00"));
-                gc.fillOval(x, y, w, h);
-            }
-        }
-    }
-
-    // =========================================================
-    //  HUD
-    // =========================================================
-
-    private void desenharHUD() {
-        gc.setFont(Font.font("Monospace", FontWeight.BOLD, 14));
-
-        gc.setFill(Color.web("#ffffff88"));
-        gc.fillText("SCORE", 10, 20);
-        gc.setFill(COR_HUD);
-        gc.fillText(String.format("%06d", modelo.getJogador().getPontuacao()), 10, 38);
-
-        gc.setFill(Color.web("#ffffff88"));
-        gc.fillText("HI-SCORE", LARGURA / 2 - 50, 20);
-        gc.setFill(Color.web("#ff8c00"));
-        gc.fillText((String.format("%06d", modelo.gethiScore())), LARGURA / 2 - 36, 38);
-
-        gc.setFill(Color.web("#ffffff88"));
-        gc.fillText("VAGA", LARGURA - 90, 20);
-        gc.setFill(COR_HUD);
-        gc.fillText(String.valueOf(modelo.getVaga()), LARGURA - 90, 38);
-
-
-
-        gc.setFill(Color.web("#ffffff88"));
-        gc.setFont(Font.font("Monospace", 12));
-        gc.fillText("VIDAS", 10, ALTURA - 10);
-        int vidas = modelo.getJogador().getVidas();
-        for (int i = 0; i < vidas; i++) {
-            desenharIconeVida(60 + i * 28, ALTURA - 22);
-        }
-    }
-
-    private void desenharIconeVida(double x, double y) {
-        gc.setFill(COR_JOGADOR);
-        gc.fillRoundRect(x, y + 6, 20, 10, 4, 4);
-        gc.fillRoundRect(x + 6, y + 2, 8, 7, 3, 3);
-        gc.fillRect(x + 9, y, 2, 3);
-    }
-
-    // =========================================================
-    //  OVERLAYS
-    // =========================================================
-
-    private void desenharOverlayPausa() {
-        gc.setFill(Color.color(0, 0, 0, 0.65));
-        gc.fillRect(0, 0, LARGURA, ALTURA);
-
-        gc.setFont(Font.font("Monospace", FontWeight.BOLD, 36));
-        gc.setFill(Color.WHITE);
-        centrarTexto("⏸  PAUSADO", ALTURA / 2 - 20);
-
-        gc.setFont(Font.font("Monospace", 16));
-        gc.setFill(Color.web("#aaaaaa"));
-        centrarTexto("Prima ESC ou P para continuar", ALTURA / 2 + 20);
-    }
-
-    private void desenharOverlayVaga() {
-        gc.setFill(Color.color(0, 0, 0, 0.55));
-        gc.fillRect(0, 0, LARGURA, ALTURA);
-
-        gc.setFont(Font.font("Monospace", FontWeight.BOLD, 32));
-        gc.setFill(Color.web("#00f5ff"));
-        centrarTexto("✦ VAGA CONCLUÍDA! ✦", ALTURA / 2 - 30);
-
-        gc.setFont(Font.font("Monospace", 20));
-        gc.setFill(Color.web("#00ff88"));
-        centrarTexto("Precisão: " + modelo.getPrecisaoTiro() + "%", ALTURA / 2 + 10);
-
-        gc.setFont(Font.font("Monospace", 14));
-        gc.setFill(Color.web("#aaaaaa"));
-        centrarTexto("A preparar vaga " + (modelo.getVaga() + 1) + "...", ALTURA / 2 + 44);
-    }
-
-    private void centrarTexto(String texto, double y) {
-        double x = (LARGURA - texto.length() * 8.5) / 2;
-        gc.fillText(texto, x, y);
-    }
-
-    // =========================================================
-    //  GAME OVER
-    // =========================================================
-
-    private void mostrarGameOver() {
-        managerView.mostrarGameOver(modelo);
+    private void centrarTexto(Text t, double y) {
+        t.setX((LARGURA - t.getText().length() * 8.5) / 2);
+        t.setY(y);
     }
 }

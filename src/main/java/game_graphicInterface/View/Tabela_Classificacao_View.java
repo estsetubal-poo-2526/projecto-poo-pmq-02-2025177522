@@ -45,7 +45,7 @@ public class Tabela_Classificacao_View extends StackPane {
                 .map(ModeloJogo::getClassificacoes)
                 .orElseGet(MelhoresPontuacoes::getClassificacoes)
                 .stream()
-                .collect(Collectors.toList());
+                .toList();
 
         if (lista.isEmpty()) {
             Text vazio = new Text("— Sem pontuações registadas —");
@@ -55,7 +55,14 @@ public class Tabela_Classificacao_View extends StackPane {
         } else {
             for (int i = 0; i < lista.size(); i++) {
                 MelhoresPontuacoes mp = lista.get(i);
-                String corStr = (i == 0) ? "#ff8c00" : (i < 3) ? "#00f5ff" : "#aaaaaa";
+                String corStr;
+                if (i == 0) {
+                    corStr = "#ff8c00";
+                } else if (i < 3) {
+                    corStr = "#00f5ff";
+                } else {
+                    corStr = "#aaaaaa";
+                }
                 HBox linha = criarLinha(
                         String.valueOf(i + 1),
                         mp.getNome(),
@@ -64,7 +71,10 @@ public class Tabela_Classificacao_View extends StackPane {
                         false
                 );
                 for (javafx.scene.Node n : linha.getChildren()) {
-                    if (n instanceof Text t) t.setFill(Color.web(corStr));
+                    if (n instanceof Text) {
+                        Text t = (Text) n;
+                        t.setFill(Color.web(corStr));
+                    }
                 }
                 tabela.getChildren().add(linha);
             }
@@ -73,7 +83,7 @@ public class Tabela_Classificacao_View extends StackPane {
         tabela.setMaxWidth(500);
 
         // Botões
-        btnVoltar = createButton("◀  VOLTAR " , "FF666");
+        btnVoltar = createButton("◀  VOLTAR " , "FF6666");
         btnLimpar = createButton("LIMPAR" , "FF0000");
 
 
@@ -100,30 +110,32 @@ public class Tabela_Classificacao_View extends StackPane {
             tabela.getChildren().add(vazio);
         });
     }
-    private Button createButton(String texto, String Cor_Neon)
-    {
+    private Button createButton(String texto, String corNeon) {
         Button btn = new Button(texto);
         btn.setPrefWidth(220);
         btn.setPrefHeight(40);
 
-        String estilo =
+        String estilo = String.format(
                 "-fx-background-color: transparent;" +
-                        "-fx-text-fill: #00f5ff;" +
+                        "-fx-text-fill: %s;" +
                         "-fx-font-family: Monospace;" +
                         "-fx-font-size: 14px;" +
                         "-fx-font-weight: bold;" +
-                        "-fx-border-color: #00f5ff;" +
+                        "-fx-border-color: %s;" +
                         "-fx-border-width: 2;" +
-                        "-fx-cursor: hand;";
-        String hover =
-                "-fx-background-color: #00f5ff22;" +
+                        "-fx-cursor: hand;",
+                corNeon, corNeon);
+
+        String hover = String.format(
+                "-fx-background-color: %s22;" +
                         "-fx-text-fill: white;" +
                         "-fx-font-family: Monospace;" +
                         "-fx-font-size: 14px;" +
                         "-fx-font-weight: bold;" +
-                        "-fx-border-color: #00f5ff;" +
+                        "-fx-border-color: %s;" +
                         "-fx-border-width: 2;" +
-                        "-fx-cursor: hand;";
+                        "-fx-cursor: hand;",
+                corNeon, corNeon);
 
         btn.setStyle(estilo);
         btn.setOnMouseEntered(e -> btn.setStyle(hover));

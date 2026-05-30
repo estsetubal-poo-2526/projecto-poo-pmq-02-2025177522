@@ -21,12 +21,12 @@ public class Manager_View {
 
     public void mostrarMenu() {
         MainMenu_View menu = new MainMenu_View();
-        menu.getBtnIniciar().setOnAction(e->Iniciar());
+        menu.getBtnIniciar().setOnAction(e-> iniciar());
         menu.getBtnClassificacoes().setOnAction(e->classificacoes(null));
         menu.getBtnSair().setOnAction(e -> stage.close());
         root.getChildren().setAll(menu);
     }
-    public void Iniciar()
+    public void iniciar()
     {
         ModeloJogo modelo = new ModeloJogo();
         Game_View gameView = new Game_View(modelo, this);

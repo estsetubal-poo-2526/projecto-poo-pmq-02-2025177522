@@ -5,5 +5,5 @@ public enum EstadoJogo {
     A_JOGAR,
     PAUSADO,
     TRANSICAO_VAGA,
-    GAME_OVER,
+    GAME_OVER
 }

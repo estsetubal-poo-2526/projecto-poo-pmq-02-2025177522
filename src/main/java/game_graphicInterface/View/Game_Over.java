@@ -53,7 +53,7 @@ public class Game_Over extends StackPane {
         // Ações dos botões — registam a pontuação antes de navegar
         btnJogarNovamente.setOnAction(e -> {
             registar(modeloJogo, campoIniciais);
-            manager.Iniciar();
+            manager.iniciar();
         });
         btnMenu.setOnAction(e -> {
             registar(modeloJogo, campoIniciais);

@@ -147,8 +147,15 @@ public class ModeloJogo {
     }
     private void spawnInvasorAleatorio() {
         boolean daEsquerda = random.nextBoolean();
-        double x = daEsquerda ? -Inimigo_aleatorio.LARGURA : LARGURA_ECRA;
-        double direcao = daEsquerda ? 1 : -1;
+        double x;
+        double direcao;
+        if (daEsquerda) {
+            x = -Inimigo_aleatorio.LARGURA;
+            direcao = 1;
+        } else {
+            x = LARGURA_ECRA;
+            direcao = -1;
+        }
         invasorAleatorio = new Inimigo_aleatorio(x, 20, direcao);
     }
     private void sortearProximoInvasor() {

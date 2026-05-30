@@ -26,7 +26,6 @@ public class Game_View extends StackPane {
     private static final Color COR_JOGADOR    = Color.web("#00f5ff");
     private static final Color COR_PROJETIL_J = Color.web("#00ffcc");
     private static final Color COR_PROJETIL_I = Color.web("#ff4466");
-    private static final Color COR_BARRICADA  = Color.web("#00ff88");
     private static final Color COR_INIMIGO_F  = Color.web("#00f5ff");
     private static final Color COR_INIMIGO_M  = Color.web("#bf00ff");
     private static final Color COR_INIMIGO_T  = Color.web("#ff8c00");
@@ -404,7 +403,6 @@ public class Game_View extends StackPane {
     // =========================================================
 
     private void mostrarGameOver() {
-        Game_Over gameOver = new Game_Over(modelo, managerView);
         managerView.mostrarGameOver(modelo);
     }
 }

@@ -8,7 +8,7 @@ public class Projetil_Inimigo extends Projetil {
 
     public enum TipoTrajeto {
         ZIGZAG,
-        ROLO_LENTO
+        RETO
     }
 
     private TipoTrajeto tipoTrajeto;
@@ -21,7 +21,11 @@ public class Projetil_Inimigo extends Projetil {
     }
 
     private static double resolverVelocidade(TipoTrajeto tipo) {
-        return tipo == TipoTrajeto.ROLO_LENTO ? VELOCIDADE_BASE * 0.6 : VELOCIDADE_BASE;
+        if (tipo == TipoTrajeto.RETO) {
+            return VELOCIDADE_BASE * 0.6;
+        } else {
+            return VELOCIDADE_BASE;
+        }
     }
 
     /**

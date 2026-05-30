@@ -91,21 +91,24 @@ public class FrotaInimigo {
         }
     }
 
+
     public Projetil_Inimigo atirarAleatoriamente() {
-        List<Inimigo> atiradores = getFrenteColuna();
-        if (atiradores.isEmpty()) return null;
+            List<Inimigo> atiradores = getFrenteColuna();
+            if (atiradores.isEmpty()) return null;
 
-        Inimigo atirador = atiradores.get(random.nextInt(atiradores.size()));
-        double px = atirador.getX() + atirador.getLargura() / 2
-                - Projetil_Inimigo.LARGURA / 2;
-        double py = atirador.getY() + atirador.getAltura();
+            Inimigo atirador = atiradores.get(random.nextInt(atiradores.size()));
+            double px = atirador.getX() + atirador.getLargura() / 2
+                    - Projetil_Inimigo.LARGURA / 2;
+            double py = atirador.getY() + atirador.getAltura();
 
-        Projetil_Inimigo.TipoTrajeto tipo = random.nextBoolean()
-                ? Projetil_Inimigo.TipoTrajeto.ZIGZAG
-                : Projetil_Inimigo.TipoTrajeto.ROLO_LENTO;
+            // Removemos o ZIGZAG.
+            // Se o teu ROLO_LENTO for um tiro vertical normal (apenas mais lento), podes usar esse.
+            // Se tiveres um tipo NORMAL ou RETO, deves colocá-lo aqui no lugar do ROLO_LENTO.
+            Projetil_Inimigo.TipoTrajeto tipo = Projetil_Inimigo.TipoTrajeto.RETO;
 
-        return new Projetil_Inimigo(px, py, tipo);
+            return new Projetil_Inimigo(px, py, tipo);
     }
+
 
     /** Desce toda a frota uma linha (PASSO_DESCIDA pixels). */
     public void descerLinha() {

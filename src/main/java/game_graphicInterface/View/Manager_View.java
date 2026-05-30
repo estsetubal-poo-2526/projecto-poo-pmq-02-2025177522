@@ -29,12 +29,20 @@ public class Manager_View {
     }
     public void Iniciar()
     {
-
+        ModeloJogo modelo = new ModeloJogo();
+        Game_View gameView = new Game_View(modelo, this);
+        root.getChildren().setAll(gameView);
+        gameView.iniciar();
     }
     public void classificacoes(ModeloJogo modeloJogo){
         Tabela_Classificacao table = new Tabela_Classificacao(modeloJogo);
         table.getBtnVoltar().setOnAction(e->mostrarMenu());
         root.getChildren().setAll(table);
     }
+    public void mostrarGameOver(ModeloJogo modeloJogo) {
+        Game_Over ecraGameOver = new Game_Over(modeloJogo, this);
+        root.getChildren().setAll(ecraGameOver);
+    }
+        // SE a tua Manager_View usa uma variável root (ex: rootPane), fazes assim:
     public Scene getScene() { return scene; }
 }

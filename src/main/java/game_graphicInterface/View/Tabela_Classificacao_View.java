@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 public class Tabela_Classificacao_View extends StackPane {
     private final Button btnVoltar;
-
+    private final Button btnLimpar;
     public Tabela_Classificacao_View(ModeloJogo jogo) {
         setPrefSize(800, 600);
         setStyle("-fx-background-color: #000814;");
@@ -72,10 +72,40 @@ public class Tabela_Classificacao_View extends StackPane {
 
         tabela.setMaxWidth(500);
 
-        // Botão voltar
-        btnVoltar = new javafx.scene.control.Button("◀  VOLTAR");
-        btnVoltar.setPrefWidth(180);
-        btnVoltar.setPrefHeight(40);
+        // Botões
+        btnVoltar = createButton("◀  VOLTAR " , "FF666");
+        btnLimpar = createButton("LIMPAR" , "FF0000");
+
+
+        VBox conteudo = new VBox(24, titulo, tabela, btnVoltar, btnLimpar);
+        conteudo.setAlignment(Pos.CENTER);
+        conteudo.setMaxWidth(520);
+
+        getChildren().add(conteudo);
+
+        btnLimpar.setOnAction(e -> {
+
+            MelhoresPontuacoes.limparTabela();
+
+            btnLimpar.setText("✔ TABELA LIMPA");
+            btnLimpar.setDisable(true);
+
+
+            tabela.getChildren().clear();
+            tabela.getChildren().add(cabecalho);
+
+            Text vazio = new Text("— Sem pontuações registadas —");
+            vazio.setFont(Font.font("Monospace", 14));
+            vazio.setFill(Color.web("#00f5ff66"));
+            tabela.getChildren().add(vazio);
+        });
+    }
+    private Button createButton(String texto, String Cor_Neon)
+    {
+        Button btn = new Button(texto);
+        btn.setPrefWidth(220);
+        btn.setPrefHeight(40);
+
         String estilo =
                 "-fx-background-color: transparent;" +
                         "-fx-text-fill: #00f5ff;" +
@@ -94,17 +124,12 @@ public class Tabela_Classificacao_View extends StackPane {
                         "-fx-border-color: #00f5ff;" +
                         "-fx-border-width: 2;" +
                         "-fx-cursor: hand;";
-        btnVoltar.setStyle(estilo);
-        btnVoltar.setOnMouseEntered(e -> btnVoltar.setStyle(hover));
-        btnVoltar.setOnMouseExited(e -> btnVoltar.setStyle(estilo));
 
-        VBox conteudo = new VBox(24, titulo, tabela, btnVoltar);
-        conteudo.setAlignment(Pos.CENTER);
-        conteudo.setMaxWidth(520);
-
-        getChildren().add(conteudo);
+        btn.setStyle(estilo);
+        btn.setOnMouseEntered(e -> btn.setStyle(hover));
+        btn.setOnMouseExited(e -> btn.setStyle(estilo));
+        return btn;
     }
-
     private HBox criarLinha(String pos, String nome, String pontos, String vaga, boolean header) {
         HBox linha = new HBox();
         linha.setAlignment(Pos.CENTER_LEFT);

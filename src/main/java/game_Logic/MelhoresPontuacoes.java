@@ -33,7 +33,7 @@ public class MelhoresPontuacoes implements Comparable<MelhoresPontuacoes>, Seria
         if (classificacoes.size() > MAX_SCORES)
             classificacoes = new ArrayList<>(classificacoes.subList(0, MAX_SCORES));
 
-        salvarNoDisco(); // 3. Salva sempre que houver alteração
+        salvarNoDisco(); //  Salva sempre que houver alteração
     }
 
     private static void salvarNoDisco() {
@@ -67,6 +67,10 @@ public class MelhoresPontuacoes implements Comparable<MelhoresPontuacoes>, Seria
     public static boolean existeNome(String nomeProcurado) {
         return getClassificacoes().stream()
                 .anyMatch(score -> score.getNome().equalsIgnoreCase(nomeProcurado));
+    }
+    public static void limparTabela() {
+        classificacoes.clear();
+        salvarNoDisco();
     }
 
     @Override

@@ -28,8 +28,7 @@ public class Game_Over extends StackPane {
 
     private final Button btnJogarNovamente;
     private final Button btnMenu;
-    private final Button btnClassificacoes;
-
+    private final Button btnGuardar;
     /** Impede que a pontuação seja registada mais do que uma vez. */
     private boolean jaRegistado = false;
 
@@ -48,8 +47,8 @@ public class Game_Over extends StackPane {
         VBox registoBox         = criarRegistoBox(modeloJogo, campoIniciais);
 
         btnJogarNovamente = criarBotao("▶  JOGAR NOVAMENTE", "#00f5ff");
-        btnClassificacoes = criarBotao("★  CLASSIFICAÇÕES",  "#ff8c00");
         btnMenu           = criarBotao("⌂  MENU PRINCIPAL",  "#00f5ff");
+        btnGuardar        = criarBotao("Guardar classificação" , "#FF0000");
 
         // Ações dos botões — registam a pontuação antes de navegar
         btnJogarNovamente.setOnAction(e -> {
@@ -60,15 +59,17 @@ public class Game_Over extends StackPane {
             registar(modeloJogo, campoIniciais);
             manager.mostrarMenu();
         });
-        btnClassificacoes.setOnAction(e -> {
+        btnGuardar.setOnAction(e -> {
             registar(modeloJogo, campoIniciais);
-            manager.classificacoes(modeloJogo);
+            btnGuardar.setText("✔ GUARDADO");
+            btnGuardar.setDisable(true);
         });
+
 
         HBox botoes = new HBox(20, btnJogarNovamente, btnMenu);
         botoes.setAlignment(Pos.CENTER);
 
-        VBox conteudo = new VBox(22, titulo, stats, registoBox, btnClassificacoes, botoes);
+        VBox conteudo = new VBox(22, titulo, stats, registoBox,btnGuardar, botoes);
         conteudo.setAlignment(Pos.CENTER);
         conteudo.setMaxWidth(500);
 
@@ -215,6 +216,7 @@ public class Game_Over extends StackPane {
                         "-fx-border-width: 2;"                +
                         "-fx-cursor: hand;",
                 corNeon, corNeon);
+
 
         btn.setStyle(estilo);
         btn.setOnMouseEntered(e -> btn.setStyle(hover));

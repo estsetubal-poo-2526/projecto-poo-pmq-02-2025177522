@@ -314,8 +314,9 @@ public class ModeloJogo {
         classificacoes = new ArrayList<>(MelhoresPontuacoes.getClassificacoes());
     }
     public boolean ehNovoRecorde() {
-        return classificacoes.isEmpty()
-                || jogador.getPontuacao() > classificacoes.get(0).getPontuacao();
+        List<MelhoresPontuacoes> rankAtual = MelhoresPontuacoes.getClassificacoes();
+        return rankAtual.isEmpty()
+                || jogador.getPontuacao() > rankAtual.get(0).getPontuacao();
     }
     // ---- Limpeza ----
     private void limparInativos() {

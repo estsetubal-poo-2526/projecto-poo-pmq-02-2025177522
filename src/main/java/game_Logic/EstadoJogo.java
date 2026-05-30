@@ -6,5 +6,4 @@ public enum EstadoJogo {
     PAUSADO,
     TRANSICAO_VAGA,
     GAME_OVER,
-    CLASSIFICACOES
 }

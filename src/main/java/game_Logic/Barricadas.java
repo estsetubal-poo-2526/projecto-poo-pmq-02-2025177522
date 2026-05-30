@@ -13,17 +13,13 @@ public class Barricadas extends EntidadeJogo {
         this.integridade = INTEGRIDADE_MAX;
     }
 
-    /**
-     * A barricada recebe dano de um projétil.
-     * Cada hit reduz a integridade em 1.
-     */
+
     public void receberDano() {
         if (integridade > 0) {
             integridade--;
         }
     }
 
-    /** Verifica se a barricada foi completamente destruída. */
     public boolean estaDestruida() {
         return integridade <= 0;
     }

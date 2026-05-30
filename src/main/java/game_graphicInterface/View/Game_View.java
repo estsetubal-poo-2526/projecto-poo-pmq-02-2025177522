@@ -342,6 +342,8 @@ public class Game_View extends StackPane {
         gc.setFill(COR_HUD);
         gc.fillText(String.valueOf(modelo.getVaga()), LARGURA - 90, 38);
 
+
+
         gc.setFill(Color.web("#ffffff88"));
         gc.setFont(Font.font("Monospace", 12));
         gc.fillText("VIDAS", 10, ALTURA - 10);

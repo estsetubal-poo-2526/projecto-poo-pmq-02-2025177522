@@ -109,7 +109,7 @@ public class Game_Over extends StackPane {
                         "-fx-border-width: 2;"           +
                         "-fx-alignment: center;"
         );
-        campo.setPromptText("AAA");
+        campo.setPromptText("AAAAAAAAAA");
         // Registar ao premir Enter no campo
         campo.setOnAction(e -> registar(modeloJogo, campo));
         return campo;

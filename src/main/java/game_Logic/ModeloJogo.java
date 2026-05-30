@@ -335,7 +335,18 @@ public class ModeloJogo {
     public Inimigo_aleatorio getInvasorAleatorio() { return invasorAleatorio; }
     public EstadoJogo getEstado() { return estado; }
     public int getVaga() { return vaga; }
-    public int getHiScore() { return hiScore; }
+    public int gethiScore() {
+            List<MelhoresPontuacoes> rankAtual = MelhoresPontuacoes.getClassificacoes();
+
+            // Se a tabela estiver vazia, mostra a pontuação atual do jogador (ou 0)
+            if (rankAtual.isEmpty()) {
+                return hiScore;
+            }
+
+            // Se não estiver vazia, o High Score do ecrã é o valor mais alto entre:
+            // O 1º lugar da tabela OU a pontuação atual do jogador nesta partida
+            return Math.max(rankAtual.get(0).getPontuacao(), hiScore);
+    }
     public List<MelhoresPontuacoes> getClassificacoes() { return Collections.unmodifiableList(classificacoes); }
     public int getPrecisaoTiro() {
         if (tirosTotais == 0) return 0;

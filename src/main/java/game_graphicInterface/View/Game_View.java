@@ -335,7 +335,7 @@ public class Game_View extends StackPane {
         gc.setFill(Color.web("#ffffff88"));
         gc.fillText("HI-SCORE", LARGURA / 2 - 50, 20);
         gc.setFill(Color.web("#ff8c00"));
-        gc.fillText(String.format("%06d", modelo.getHiScore()), LARGURA / 2 - 36, 38);
+        gc.fillText((String.format("%06d", modelo.gethiScore())), LARGURA / 2 - 36, 38);
 
         gc.setFill(Color.web("#ffffff88"));
         gc.fillText("VAGA", LARGURA - 90, 20);

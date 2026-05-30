@@ -19,7 +19,7 @@ public class MelhoresPontuacoes implements Comparable<MelhoresPontuacoes>, Seria
     private final int vaga;
 
     public MelhoresPontuacoes(String nome, int pontuacao, int vaga) {
-        this.nome = nome.substring(0, Math.min(3, nome.length())).toUpperCase();
+        this.nome = nome.substring(0, Math.min(10, nome.length())).toUpperCase();
         this.pontuacao = pontuacao;
         this.vaga = vaga;
     }

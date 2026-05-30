@@ -10,15 +10,14 @@ import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
-public class MainMenu extends StackPane {
+public class MainMenu_View extends StackPane {
     private final Button btnIniciar;
     private final Button btnClassificacoes;
     private final Button btnSair;
 
-    public MainMenu() {
+    public MainMenu_View() {
         // Título "SYNTHETIC OCEANS"
         VBox tituloBox = new VBox(2);
         tituloBox.setAlignment(Pos.CENTER);

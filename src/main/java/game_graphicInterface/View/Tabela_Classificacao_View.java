@@ -17,10 +17,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class Tabela_Classificacao extends StackPane {
+public class Tabela_Classificacao_View extends StackPane {
     private final Button btnVoltar;
 
-    public Tabela_Classificacao(ModeloJogo jogo) {
+    public Tabela_Classificacao_View(ModeloJogo jogo) {
         setPrefSize(800, 600);
         setStyle("-fx-background-color: #000814;");
 

@@ -69,7 +69,7 @@ public class ModeloJogo {
     }
     private void inicializarEntidades() {
         jogador = new Player(X_JOGADOR_INICIO, Y_JOGADOR);
-        frota = new FrotaInimigo(X_INICIO_FROTA, Y_INICIO_FROTA, 0, LARGURA_ECRA);
+        frota = new FrotaInimigo(X_INICIO_FROTA, Y_INICIO_FROTA, 0, LARGURA_ECRA, this.vaga);
         barricadas = criarBarricadas();
         projetilJogador = new ArrayList<>();
         projetisInimigos = new ArrayList<>();
@@ -251,7 +251,7 @@ public class ModeloJogo {
         vaga++;
         tirosTotais = 0;
         tirosAcertados = 0;
-        frota = new FrotaInimigo(X_INICIO_FROTA, Y_INICIO_FROTA, 0, LARGURA_ECRA);
+        frota = new FrotaInimigo(X_INICIO_FROTA, Y_INICIO_FROTA, 0, LARGURA_ECRA, this.vaga);
         projetisInimigos.clear();
         projetilJogador.clear();
         invasorAleatorio = null;

@@ -2,7 +2,6 @@ package game_graphicInterface.View;
 
 import game_Logic.ModeloJogo;
 import javafx.scene.Scene;
-import javafx.scene.control.Tab;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -21,7 +20,7 @@ public class Manager_View {
     }
 
     public void mostrarMenu() {
-        MainMenu menu = new MainMenu();
+        MainMenu_View menu = new MainMenu_View();
         menu.getBtnIniciar().setOnAction(e->Iniciar());
         menu.getBtnClassificacoes().setOnAction(e->classificacoes(null));
         menu.getBtnSair().setOnAction(e -> stage.close());
@@ -35,7 +34,7 @@ public class Manager_View {
         gameView.iniciar();
     }
     public void classificacoes(ModeloJogo modeloJogo){
-        Tabela_Classificacao table = new Tabela_Classificacao(modeloJogo);
+        Tabela_Classificacao_View table = new Tabela_Classificacao_View(modeloJogo);
         table.getBtnVoltar().setOnAction(e->mostrarMenu());
         root.getChildren().setAll(table);
     }

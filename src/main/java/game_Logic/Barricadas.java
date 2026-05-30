@@ -4,7 +4,7 @@ public class Barricadas extends EntidadeJogo {
 
     public static final double LARGURA = 60;
     public static final double ALTURA = 40;
-    public static final int INTEGRIDADE_MAX = 6; // 6 hits para destruir
+    public static final int INTEGRIDADE_MAX = 10; // 6 hits para destruir
 
     private int integridade;
 

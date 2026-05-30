@@ -76,19 +76,6 @@ public class MainMenu_View extends StackPane {
         btn.setOnMouseExited(e -> btn.setStyle(estilo));
         return btn;
     }
-    private void desenharFundo(GraphicsContext gc, long now) {
-        // Gradiente oceano profundo
-        gc.setFill(new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
-                new Stop(0, Color.web("#000814")),
-                new Stop(0.5, Color.web("#001233")),
-                new Stop(1, Color.web("#000814"))));
-        gc.fillRect(0, 0, 800, 600);
-
-        // Linha de fundo suave
-        gc.setStroke(Color.web("#00f5ff33"));
-        gc.setLineWidth(1);
-        gc.strokeLine(0, 580, 800, 580);
-    }
 
     public Button getBtnIniciar() { return btnIniciar; }
     public Button getBtnClassificacoes() { return btnClassificacoes; }

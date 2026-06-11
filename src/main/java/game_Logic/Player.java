@@ -31,6 +31,14 @@ public class Player extends EntidadeJogo {
     }
 
     /**
+     * Move o jogador Verticalmente.
+     * @param dy deslocamento em y (negativo = baixo, positivo = cima)
+     */
+    public void moverVertical(double dy) {
+        this.y += dy;
+    }
+
+    /**
      * Cria e devolve um projétil disparado pelo jogador.
      * O projétil parte do centro do jogador, em direção ao topo.
      */

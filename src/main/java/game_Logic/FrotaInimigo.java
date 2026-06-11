@@ -83,9 +83,7 @@ public class FrotaInimigo {
         inicializarFrota(xInicio, yInicio);
     }
 
-    // =========================================================
-    //  INICIALIZAÇÃO
-    // =========================================================
+
 
     private void inicializarFrota(double xInicio, double yInicio) {
         for (int linha = 0; linha < LINHAS; linha++) {
@@ -159,7 +157,7 @@ public class FrotaInimigo {
     }
 
     // =========================================================
-    //  DISPARO
+    //  DISPARAR
     // =========================================================
 
     /**

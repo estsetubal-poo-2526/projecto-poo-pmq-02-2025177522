@@ -194,5 +194,5 @@ public class MainMenu_View extends StackPane {
      * Obtém o botão responsável por aceder ao menu de opções/controlos.
      * @return O {@link Button} "OPÇÕES".
      */
-    public Button getBtnControlos() { return btnControlo; }
+    public Button getBtnControlos() { return btnControlos; }
 }

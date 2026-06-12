@@ -224,7 +224,7 @@ public class Tabela_Classificacao_View extends StackPane {
      *
      * @return O {@link Button} utilizado para regressar ao menu principal.
      */
-    public javafx.scene.control.Button getBtnVolta() {
+    public javafx.scene.control.Button getBtnVolta  () {
         return btnVoltar;
     }
 }

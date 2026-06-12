@@ -121,5 +121,5 @@ public class Pause_Menu_View extends StackPane {
      * Obtém o botão responsável por desistir da partida.
      * * @return O {@link Button} "DESISTIR".
      */
-    public Button getBtnDesistir() { return btnDesisti; }
+    public Button getBtnDesistir() { return btnDesistir; }
 }

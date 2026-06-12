@@ -147,6 +147,6 @@ public class Manager_View {
      * @return O objeto {@link Scene} em uso.
      */
     public Scene getScene() {
-        return scen;
+        return scene;
     }
 }

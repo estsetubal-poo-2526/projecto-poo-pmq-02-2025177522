@@ -30,7 +30,7 @@ public class Manager_View {
 
     private void iniciarMusicaFundo() {
         try {
-            URL caminhoMusica = getClass().getResource("/SpaceInvaders.mp3");
+            URL caminhoMusica = getClass().getResource("/Teste.mp3");
 
             if (caminhoMusica != null) {
 

@@ -24,16 +24,12 @@ class PlayerTest {
     }
 
     @Test
-    void testMovimentoHorizontalEVertical() {
+    void testMovimentoHorizontal() {
         // Mover para a direita e para a esquerda
         jogador.moverHorizontal(10.0);
         assertEquals(110.0, jogador.getX(), "O X deve aumentar ao mover positivo na horizontal.");
         jogador.moverHorizontal(-20.0);
         assertEquals(90.0, jogador.getX(), "O X deve diminuir ao mover negativo na horizontal.");
-
-        // Mover para cima e para baixo
-        jogador.moverVertical(-15.0);
-        assertEquals(485.0, jogador.getY(), "O Y deve alterar corretamente ao mover na vertical.");
     }
 
     @Test

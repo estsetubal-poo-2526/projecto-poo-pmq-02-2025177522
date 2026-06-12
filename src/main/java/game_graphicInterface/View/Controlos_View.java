@@ -11,10 +11,20 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
+/**
+ * Classe responsável pela interface visual do menu de controlos.
+ * Estende {@link StackPane} e exibe uma lista de teclas e respetivas ações,
+ * bem como um botão para regressar ao menu anterior.
+ */
 public class Controlos_View extends StackPane {
 
     private final Button btnVoltar;
 
+    /**
+     * Construtor da classe {@code Controlos_View}.
+     * Inicializa os componentes visuais, definindo o tamanho da janela, a cor de fundo,
+     * o título estilizado, a lista de controlos disponíveis e o botão de voltar.
+     */
     public Controlos_View() {
         setPrefSize(800, 600);
         setStyle("-fx-background-color: #000814;");
@@ -33,7 +43,7 @@ public class Controlos_View extends StackPane {
         adicionarControlo(listaControlos, "ESPAÇO",     "Disparar");
         adicionarControlo(listaControlos, "ESC / P",    "Pausar / Retomar");
 
-        btnVoltar = criarBotao("◀  VOLTAR", "#00f5ff");
+        btnVoltar = criarBotao("◀️  VOLTAR", "#00f5ff");
 
         VBox conteudo = new VBox(30, titulo, listaControlos, btnVoltar);
         conteudo.setAlignment(Pos.CENTER);
@@ -42,6 +52,13 @@ public class Controlos_View extends StackPane {
         getChildren().add(conteudo);
     }
 
+    /**
+     * Helper method para adicionar uma linha com a tecla e a sua respetiva descrição à lista.
+     *
+     * @param box       O contentor {@link VBox} onde a linha será adicionada.
+     * @param tecla     A {@code String} que representa a tecla ou atalho (ex: "← / A").
+     * @param descricao A {@code String} com a descrição da ação correspondente (ex: "Mover para a esquerda").
+     */
     private void adicionarControlo(VBox box, String tecla, String descricao) {
         HBox linha = new HBox(20);
         linha.setAlignment(Pos.CENTER);
@@ -60,6 +77,14 @@ public class Controlos_View extends StackPane {
         box.getChildren().add(linha);
     }
 
+    /**
+     * Cria e estiliza um botão com um efeito visual estilo "neon".
+     * O botão possui comportamentos interativos (hover) quando o rato passa por cima.
+     *
+     * @param texto   O texto a ser exibido no botão.
+     * @param corNeon O código hexadecimal da cor (ex: "#00f5ff") a aplicar aos bordos e ao texto.
+     * @return Um objeto {@link Button} configurado e estilizado.
+     */
     private Button criarBotao(String texto, String corNeon) {
         Button btn = new Button(texto);
         btn.setPrefWidth(180);
@@ -90,5 +115,11 @@ public class Controlos_View extends StackPane {
         return btn;
     }
 
+    /**
+     * Obtém a referência do botão "Voltar".
+     * Este método é utilizado pelo Controller associado para atribuir eventos (ActionListeners).
+     *
+     * @return O {@link Button} utilizado para regressar.
+     */
     public Button getBtnVoltar() { return btnVoltar; }
 }

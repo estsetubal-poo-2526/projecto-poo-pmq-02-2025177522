@@ -36,7 +36,7 @@ public class MelhoresPontuacoes implements Comparable<MelhoresPontuacoes>, Seria
         salvarNoDisco(); //  Salva sempre que houver alteração
     }
 
-    private static void salvarNoDisco() {
+    public static void salvarNoDisco() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(ARQUIVO))) {
             oos.writeObject(classificacoes);
         } catch (IOException e) {

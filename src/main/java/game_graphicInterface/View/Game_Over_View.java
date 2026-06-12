@@ -239,7 +239,7 @@ public class Game_Over_View extends StackPane {
      * @param corNeon A cor hexadecimal que define o bordo e os detalhes de estado do botão.
      * @return Um {@link Button} pronto a ser adicionado à interface visual.
      */
-    private Button criarBotao(String texto, String corNeon) {
+    private Button criarBotao(String texto, String corNeo) {
         Button btn = new Button(texto);
         btn.setPrefWidth(220);
         btn.setPrefHeight(40);

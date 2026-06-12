@@ -705,7 +705,7 @@ public class Game_View extends StackPane {
      * @param t O componente de texto ({@link Text}) a centralizar.
      * @param y A posição vertical onde deverá ser fixado.
      */
-    private void centrarTexto(Text t, double y) {
+    private void centrarTexto(Text t, double ) {
         t.setX((LARGURA - t.getText().length() * 8.5) / 2);
         t.setY(y);
     }

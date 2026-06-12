@@ -43,7 +43,7 @@ public class Controlos_View extends StackPane {
         adicionarControlo(listaControlos, "ESPAÇO",     "Disparar");
         adicionarControlo(listaControlos, "ESC / P",    "Pausar / Retomar");
 
-        btnVoltar = criarBotao("◀  VOLTAR", "#00f5ff");
+        btnVoltar = criarBotao("◀️  VOLTAR", "#00f5ff");
 
         VBox conteudo = new VBox(30, titulo, listaControlos, btnVoltar);
         conteudo.setAlignment(Pos.CENTER);

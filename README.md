@@ -40,38 +40,39 @@ O jogo foi desenvolvido com uma arquitetura *MVC (Model-View-Controller)* em Jav
 
 ## 🏗️ Arquitetura
 
+
+
 O projeto está organizado em dois pacotes principais:
 
-
+```text
 src/
 ├── game_graphicInterface/
 │   ├── Controlador/
-│   │   └── Main_Jogo.java          # Ponto de entrada (JavaFX Application)
+│   │   └── Main_Jogo.java                  # Ponto de entrada (JavaFX Application)
 │   └── View/
-│       ├── Manager_View.java        # Gestor de navegação entre ecrãs
-│       ├── Game_View.java           # Vista principal do jogo (game loop)
-│       ├── MainMenu_View.java       # Menu principal
-│       ├── Pause_Menu_View.java     # Menu de pausa (overlay)
-│       ├── Game_Over_View.java      # Ecrã de fim de jogo
+│       ├── Manager_View.java               # Gestor de navegação entre ecrãs
+│       ├── Game_View.java                  # Vista principal do jogo (game loop)
+│       ├── MainMenu_View.java              # Menu principal
+│       ├── Pause_Menu_View.java            # Menu de pausa (overlay)
+│       ├── Game_Over_View.java             # Ecrã de fim de jogo
 │       ├── Tabela_Classificacao_View.java  # Tabela de pontuações
-│       └── Controlos_View.java      # Ecrã de controlos
+│       └── Controlos_View.java             # Ecrã de controlos
 └── game_Logic/
-├── ModeloJogo.java              # Modelo central (lógica do jogo)
-├── EstadoJogo.java              # Enum de estados do jogo
-├── EntidadeJogo.java            # Superclasse abstrata de todas as entidades
-├── Player.java                  # Jogador
-├── FrotaInimigo.java            # Grelha 5×11 de inimigos
-├── Inimigo.java                 # Superclasse abstrata dos inimigos
-├── Inimigo_Frente.java          # Inimigo das filas da frente (10 pts)
-├── Inimigo_Meio.java            # Inimigo das filas do meio (20 pts)
-├── Inimigo_Tras.java            # Inimigo da fila de trás (30 pts)
-├── Inimigo_aleatorio.java       # Invasor bónus que atravessa o topo
-├── Barricadas.java              # Barricadas destrutíveis
-├── Projetil.java                # Superclasse abstrata dos projéteis
-├── Projetil_jogador.java        # Projétil do jogador (laser reto)
-├── Projetil_Inimigo.java        # Projétil inimigo (reto ou zigzag)
-└── MelhoresPontuacoes.java      # Tabela de high scores (persistência em disco)
-
+    ├── ModeloJogo.java                     # Modelo central (lógica do jogo)
+    ├── EstadoJogo.java                     # Enum de estados do jogo
+    ├── EntidadeJogo.java                   # Superclasse abstrata de todas as entidades
+    ├── Player.java                         # Jogador
+    ├── FrotaInimigo.java                   # Grelha 5×11 de inimigos
+    ├── Inimigo.java                        # Superclasse abstrata dos inimigos
+    ├── Inimigo_Frente.java                 # Inimigo das filas da frente (10 pts)
+    ├── Inimigo_Meio.java                   # Inimigo das filas do meio (20 pts)
+    ├── Inimigo_Tras.java                   # Inimigo da fila de trás (30 pts)
+    ├── Inimigo_aleatorio.java              # Invasor bónus que atravessa o topo
+    ├── Barricadas.java                     # Barricadas destrutíveis
+    ├── Projetil.java                       # Superclasse abstrata dos projéteis
+    ├── Projetil_jogador.java               # Projétil do jogador (laser reto)
+    ├── Projetil_Inimigo.java               # Projétil inimigo (reto ou zigzag)
+    └── MelhoresPontuacoes.java             # Tabela de high scores (persistência em disco)
 
 ### Padrão MVC
 

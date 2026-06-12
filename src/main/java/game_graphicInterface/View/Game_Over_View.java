@@ -59,7 +59,7 @@ public class Game_Over_View extends StackPane {
         });
         btnGuardar.setOnAction(e -> {
             registar(modeloJogo, campoIniciais);
-            MelhoresPontuacoes.salvarNoDisco();
+            MelhoresPontuacoes.salvarNoDisco()
             btnGuardar.setText("✔ GUARDADO");
             btnGuardar.setDisable(true);
         });

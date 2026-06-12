@@ -15,11 +15,32 @@ import javafx.scene.text.Text;
 import javafx.scene.control.Button;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+/**
+ * Classe responsável por exibir o ecrã das melhores pontuações (Leaderboard).
+ *
+ * <p>Esta View apresenta uma tabela formatada com o Top de pontuações registadas,
+ * destacando visualmente o primeiro classificado e o restante pódio (top 3).
+ * Inclui também funcionalidades para regressar ao menu anterior e para limpar
+ * todo o registo de classificações do sistema.</p>
+ */
 public class Tabela_Classificacao_View extends StackPane {
+
+    /** Botão para regressar ao menu anterior. */
     private final Button btnVoltar;
+
+    /** Botão para eliminar todos os registos de pontuações guardados. */
     private final Button btnLimpar;
+
+    /**
+     * Construtor da classe {@code Tabela_Classificacao_View}.
+     * <p>Inicializa a estrutura visual, o cabeçalho da tabela e tenta obter a lista
+     * de pontuações a partir do {@code ModeloJogo} fornecido ou diretamente da
+     * classe {@code MelhoresPontuacoes}. O top 3 é destacado com cores distintas.</p>
+     *
+     * @param jogo O modelo de jogo atual. Pode ser {@code null} caso a tabela
+     * seja acedida diretamente a partir do Menu Principal.
+     */
     public Tabela_Classificacao_View(ModeloJogo jogo) {
         setPrefSize(800, 600);
         setStyle("-fx-background-color: #000814;");
@@ -40,7 +61,6 @@ public class Tabela_Classificacao_View extends StackPane {
         tabela.setAlignment(Pos.CENTER);
         tabela.getChildren().add(cabecalho);
 
-
         List<MelhoresPontuacoes> lista = Optional.ofNullable(jogo)
                 .map(ModeloJogo::getClassificacoes)
                 .orElseGet(MelhoresPontuacoes::getClassificacoes)
@@ -56,6 +76,7 @@ public class Tabela_Classificacao_View extends StackPane {
             for (int i = 0; i < lista.size(); i++) {
                 MelhoresPontuacoes mp = lista.get(i);
                 String corStr;
+                // Formatação de cores: Laranja para 1º, Ciano para 2º e 3º, Cinzento para os restantes
                 if (i == 0) {
                     corStr = "#ff8c00";
                 } else if (i < 3) {
@@ -86,20 +107,18 @@ public class Tabela_Classificacao_View extends StackPane {
         btnVoltar = createButton("◀  VOLTAR " , "FF6666");
         btnLimpar = createButton("LIMPAR" , "FF0000");
 
-
         VBox conteudo = new VBox(24, titulo, tabela, btnVoltar, btnLimpar);
         conteudo.setAlignment(Pos.CENTER);
         conteudo.setMaxWidth(520);
 
         getChildren().add(conteudo);
 
+        // Lógica para o botão de limpar a tabela
         btnLimpar.setOnAction(e -> {
-
             MelhoresPontuacoes.limparTabela();
 
             btnLimpar.setText("✔ TABELA LIMPA");
             btnLimpar.setDisable(true);
-
 
             tabela.getChildren().clear();
             tabela.getChildren().add(cabecalho);
@@ -110,6 +129,14 @@ public class Tabela_Classificacao_View extends StackPane {
             tabela.getChildren().add(vazio);
         });
     }
+
+    /**
+     * Cria e estiliza um botão com propriedades visuais e efeitos de hover (neon).
+     *
+     * @param texto   O texto a ser exibido no botão.
+     * @param corNeon O código de cor hexadecimal para os bordos e texto do botão.
+     * @return Um objeto {@link Button} formatado.
+     */
     private Button createButton(String texto, String corNeon) {
         Button btn = new Button(texto);
         btn.setPrefWidth(220);
@@ -142,6 +169,17 @@ public class Tabela_Classificacao_View extends StackPane {
         btn.setOnMouseExited(e -> btn.setStyle(estilo));
         return btn;
     }
+
+    /**
+     * Constrói uma linha horizontal (HBox) para ser inserida na tabela de classificações.
+     *
+     * @param pos    A posição (ranking) do jogador.
+     * @param nome   O nome ou iniciais do jogador.
+     * @param pontos A pontuação obtida.
+     * @param vaga   O nível (vaga) alcançado.
+     * @param header Booleano que indica se a linha a criar é o cabeçalho principal da tabela.
+     * @return Um {@link HBox} contendo os elementos de texto alinhados em colunas.
+     */
     private HBox criarLinha(String pos, String nome, String pontos, String vaga, boolean header) {
         HBox linha = new HBox();
         linha.setAlignment(Pos.CENTER_LEFT);
@@ -151,7 +189,7 @@ public class Tabela_Classificacao_View extends StackPane {
         Text tPos = texto(pos, 40, header);
         Text tNome = texto(nome, 120, header);
         Text tPontos = texto(pontos, 200, header);
-        Text tVaga = texto("V" + vaga, 80, header);
+        Text tVaga = texto(header ? vaga : "V" + vaga, 80, header);
 
         if (header) {
             for (Text t : new Text[]{tPos, tNome, tPontos, tVaga}) {
@@ -165,6 +203,14 @@ public class Tabela_Classificacao_View extends StackPane {
         return linha;
     }
 
+    /**
+     * Método auxiliar para criar e formatar os nós de texto das células da tabela.
+     *
+     * @param s      A string (conteúdo) a exibir.
+     * @param minW   A largura mínima que o texto deverá ocupar, garantindo o alinhamento das colunas.
+     * @param header Booleano que define se o texto pertence ao cabeçalho (aplica estilo negrito).
+     * @return O objeto {@link Text} devidamente formatado.
+     */
     private Text texto(String s, double minW, boolean header) {
         Text t = new Text(s);
         t.setFont(Font.font("Monospace", header ? FontWeight.BOLD : FontWeight.NORMAL, 15));
@@ -173,8 +219,12 @@ public class Tabela_Classificacao_View extends StackPane {
         return t;
     }
 
+    /**
+     * Obtém o botão "Voltar".
+     *
+     * @return O {@link Button} utilizado para regressar ao menu principal.
+     */
     public javafx.scene.control.Button getBtnVoltar() {
         return btnVoltar;
     }
 }
-

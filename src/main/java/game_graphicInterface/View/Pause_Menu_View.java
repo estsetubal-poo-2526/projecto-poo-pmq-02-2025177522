@@ -12,14 +12,25 @@ import javafx.scene.text.Text;
 /**
  * Ecrã de pausa sobreposto ao jogo.
  *
- * É criado uma única vez no Game_View e a sua visibilidade
- * é controlada com setVisible(true/false) conforme o estado do jogo.
+ * <p>Esta View é criada uma única vez na classe {@code Game_View} e a sua visibilidade
+ * é controlada através do método {@code setVisible(true/false)} consoante o estado
+ * atual do jogo (pausado ou em execução).</p>
+ * * <p>Apresenta um fundo escurecido semitransparente, uma mensagem informativa e opções
+ * para o jogador retomar a partida ou desistir e voltar ao menu principal.</p>
  */
 public class Pause_Menu_View extends StackPane {
 
+    /** Botão que permite ao jogador retomar a partida em curso. */
     private final Button btnRetomar;
+
+    /** Botão que permite ao jogador abandonar a partida e voltar ao menu principal. */
     private final Button btnDesistir;
 
+    /**
+     * Construtor da classe {@code Pause_Menu_View}.
+     * <p>Inicializa a interface do menu de pausa, definindo um fundo translúcido,
+     * textos estilizados indicando o estado de pausa e posicionando os botões de ação.</p>
+     */
     public Pause_Menu_View() {
         // Fundo semitransparente escuro
         setStyle("-fx-background-color: rgba(0, 0, 0, 0.65);");
@@ -52,6 +63,15 @@ public class Pause_Menu_View extends StackPane {
     //  FÁBRICA DE BOTÕES
     // =========================================================
 
+    /**
+     * Cria e estiliza um botão com um efeito de neon, mantendo o padrão visual do jogo.
+     * <p>Configura as propriedades de tamanho, margens, fontes e os eventos de interação
+     * do rato (hover) para alterar dinamicamente o brilho e a cor de fundo do botão.</p>
+     *
+     * @param texto   O texto a ser exibido no botão.
+     * @param corNeon O código hexadecimal da cor (ex: "#00f5ff") a aplicar ao texto, bordos e sombra.
+     * @return Um objeto {@link Button} pronto a ser utilizado na interface.
+     */
     private Button criarBotao(String texto, String corNeon) {
         Button btn = new Button(texto);
         btn.setPrefWidth(220);
@@ -91,6 +111,15 @@ public class Pause_Menu_View extends StackPane {
     //  GETTERS
     // =========================================================
 
+    /**
+     * Obtém o botão responsável por retomar a partida.
+     * * @return O {@link Button} "RETOMAR".
+     */
     public Button getBtnRetomar()  { return btnRetomar;  }
+
+    /**
+     * Obtém o botão responsável por desistir da partida.
+     * * @return O {@link Button} "DESISTIR".
+     */
     public Button getBtnDesistir() { return btnDesistir; }
 }

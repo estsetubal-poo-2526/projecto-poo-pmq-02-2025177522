@@ -21,16 +21,19 @@ import java.util.Set;
 /**
  * Vista principal do jogo.
  *
- * Usa um Pane JavaFX em vez de Canvas — cada entidade do jogo
- * é representada por uma forma JavaFX (Rectangle, Ellipse, etc.)
- * que é atualizada a cada frame com a posição do modelo.
+ * <p>Esta classe utiliza um {@link Pane} JavaFX em vez de um Canvas tradicional.
+ * Cada entidade do jogo é representada por uma forma JavaFX (como {@link Rectangle}, {@link Ellipse}, etc.)
+ * que é atualizada a cada frame de acordo com a posição definida no modelo lógico do jogo.</p>
  *
- * O menu de pausa (Pause_Menu_View) é sobreposto via StackPane
- * e a sua visibilidade é controlada pelo estado do jogo.
+ * <p>O menu de pausa ({@link Pause_Menu_View}) é sobreposto utilizando o {@link StackPane}
+ * e a sua visibilidade é controlada pelo estado atual do jogo.</p>
  */
 public class Game_View extends StackPane {
 
+    /** Largura da janela de jogo. */
     private static final double LARGURA = 800;
+
+    /** Altura da janela de jogo. */
     private static final double ALTURA  = 600;
 
     // ---- Paleta neon ----
@@ -46,35 +49,37 @@ public class Game_View extends StackPane {
     private final ModeloJogo modelo;
     private final Manager_View managerView;
 
-    /** Pane principal onde todas as entidades do jogo são desenhadas. */
+    /** Pane principal onde todas as entidades gráficas do jogo são adicionadas e manipuladas. */
     private final Pane campoJogo;
 
-    /** Menu de pausa sobreposto ao campoJogo. */
+    /** Ecrã de pausa que fica oculto ou visível consoante o estado do jogo. */
     private final Pause_Menu_View menuPausa;
 
+    /** Loop de renderização e atualização contínua do jogo. */
     private AnimationTimer gameLoop;
+
+    /** Registo das teclas que estão a ser premidas no momento. */
     private final Set<KeyCode> teclasAtivas = new HashSet<>();
 
-    // ---- Formas JavaFX que representam as entidades ----
-    // Jogador
+    // ---- Formas JavaFX que representam as entidades do jogador ----
     private final Rectangle corpoJogador;
     private final Rectangle torreJogador;
     private final Rectangle canhaoJogador;
     private final Ellipse  aureolJogador;
 
-    // HUD (textos)
+    // ---- HUD (Textos informativos de ecrã) ----
     private final Text txtScore;
     private final Text txtHiScore;
     private final Text txtVaga;
     private final Text txtVidas;
 
-    // Overlay de vaga concluída
+    // ---- Overlay de vaga concluída ----
     private final Text txtVagaConcluida;
     private final Text txtPrecisao;
     private final Text txtProximaVaga;
     private final Rectangle overlayVaga;
 
-    // Controlo de transição
+    // ---- Controlo de transição entre vagas ----
     private boolean emTransicao = false;
     private int framesTransicao = 0;
     private static final int DURACAO_TRANSICAO = 120;
@@ -83,6 +88,14 @@ public class Game_View extends StackPane {
     //  CONSTRUTOR
     // =========================================================
 
+    /**
+     * Construtor da classe {@code Game_View}.
+     * Inicializa todos os elementos visuais, constrói o ambiente gráfico (fundo, jogador, HUD)
+     * e configura os controlos de teclado e o loop principal.
+     *
+     * @param modelo      O modelo de dados que gere a lógica e estado do jogo.
+     * @param managerView O gestor de janelas para alternar entre ecrãs (menu, game over, etc).
+     */
     public Game_View(ModeloJogo modelo, Manager_View managerView) {
         this.modelo      = modelo;
         this.managerView = managerView;
@@ -180,11 +193,17 @@ public class Game_View extends StackPane {
     //  ARRANQUE E PARAGEM
     // =========================================================
 
+    /**
+     * Solicita o foco para a janela principal e inicia o loop de animação do jogo.
+     */
     public void iniciar() {
         requestFocus();
         gameLoop.start();
     }
 
+    /**
+     * Interrompe o loop de animação do jogo.
+     */
     public void parar() {
         if (gameLoop != null) gameLoop.stop();
     }
@@ -193,6 +212,11 @@ public class Game_View extends StackPane {
     //  INPUT
     // =========================================================
 
+    /**
+     * Configura os detetores de eventos do teclado.
+     * Adiciona teclas à lista ativa quando premidas e remove-as quando libertadas.
+     * Trata de imediato os inputs de pausa (ESC ou P).
+     */
     private void configurarInput() {
         setOnKeyPressed(e -> {
             teclasAtivas.add(e.getCode());
@@ -205,6 +229,10 @@ public class Game_View extends StackPane {
         setOnKeyReleased(e -> teclasAtivas.remove(e.getCode()));
     }
 
+    /**
+     * Processa a movimentação e disparo do jogador com base nas teclas presentemente ativas.
+     * Apenas atua se o estado atual do jogo for "A_JOGAR".
+     */
     private void processarInput() {
         if (modelo.getEstado() != EstadoJogo.A_JOGAR) return;
         if (teclasAtivas.contains(KeyCode.LEFT)  || teclasAtivas.contains(KeyCode.A))
@@ -219,6 +247,10 @@ public class Game_View extends StackPane {
     //  GAME LOOP
     // =========================================================
 
+    /**
+     * Instancia o {@link AnimationTimer} que funciona como o motor do jogo.
+     * Em cada tick de frame, processa o input, atualiza a lógica do modelo e redesenha a vista.
+     */
     private void construirGameLoop() {
         gameLoop = new AnimationTimer() {
             @Override
@@ -239,8 +271,8 @@ public class Game_View extends StackPane {
     // =========================================================
 
     /**
-     * Atualiza todas as formas JavaFX com as posições atuais do modelo.
-     * O JavaFX redesenha automaticamente o que for necessário.
+     * Atualiza todas as formas e nós JavaFX iterando sobre as propriedades físicas do modelo.
+     * Coordena também a visibilidade do menu de pausa.
      */
     private void atualizar() {
         atualizarJogador();
@@ -260,6 +292,10 @@ public class Game_View extends StackPane {
     //  ATUALIZAÇÃO DE CADA ENTIDADE
     // =========================================================
 
+    /**
+     * Mapeia as coordenadas lógicas do jogador para as respetivas formas gráficas.
+     * Oculta as formas caso o jogador deixe de estar ativo.
+     */
     private void atualizarJogador() {
         Player p = modelo.getJogador();
         if (!p.isAtivo()) {
@@ -298,9 +334,11 @@ public class Game_View extends StackPane {
         canhaoJogador.setHeight(h * 0.18);
     }
 
+    /**
+     * Desenha a frota inimiga. Para otimização, limpa os nós marcados com userData {@code true}
+     * antes de reconstruir a imagem dos inimigos vivos a cada frame.
+     */
     private void atualizarFrota() {
-        // Remove formas de inimigos anteriores e redesenha os vivos
-        // (estratégia simples: limpa e recria apenas os nós de inimigos)
         campoJogo.getChildren().removeIf(n -> Boolean.TRUE.equals(n.getUserData()) );
 
         for (Inimigo inimigo : modelo.getFrota().getVivos()) {
@@ -350,6 +388,16 @@ public class Game_View extends StackPane {
         }
     }
 
+    /**
+     * Constrói e formata as linhas que funcionam como tentáculos dos inimigos.
+     *
+     * @param x1 Ponto X inicial.
+     * @param y1 Ponto Y inicial.
+     * @param x2 Ponto X final.
+     * @param y2 Ponto Y final.
+     * @param cor Cor aplicada à linha.
+     * @return Um objeto {@link Line} formatado.
+     */
     private Line criarTentaculo(double x1, double y1, double x2, double y2, Color cor) {
         Line l = new Line(x1, y1, x2, y2);
         l.setStroke(cor);
@@ -358,12 +406,22 @@ public class Game_View extends StackPane {
         return l;
     }
 
+    /**
+     * Determina a cor do inimigo com base no seu tipo/classe concreta.
+     *
+     * @param i Instância do Inimigo.
+     * @return {@link Color} correspondente ao tipo de Inimigo.
+     */
     private Color corInimigo(Inimigo i) {
         if (i instanceof Inimigo_Tras) return COR_INIMIGO_T;
         if (i instanceof Inimigo_Meio) return COR_INIMIGO_M;
         return COR_INIMIGO_F;
     }
 
+    /**
+     * Verifica e atualiza a representação gráfica do invasor bónus aleatório ("UFO"),
+     * caso o mesmo se encontre vivo e em palco.
+     */
     private void atualizarInvasorAleatorio() {
         campoJogo.getChildren().removeIf(n -> "invasor".equals(n.getUserData()));
 
@@ -395,6 +453,10 @@ public class Game_View extends StackPane {
         campoJogo.getChildren().addAll(aureola, corpo, cabeca, pontos);
     }
 
+    /**
+     * Atualiza as barricadas protetoras. A sua cor degrada-se consoante o dano recebido.
+     * A integridade é representada visualmente através de cor e "rachas" na forma geométrica.
+     */
     private void atualizarBarricadas() {
         campoJogo.getChildren().removeIf(n -> "barricada".equals(n.getUserData()));
 
@@ -438,6 +500,12 @@ public class Game_View extends StackPane {
         }
     }
 
+    /**
+     * Interpola a cor das barricadas para demonstrar o seu estado de dano (vai de verde para vermelho).
+     *
+     * @param pct Percentagem de integridade (de 0.0 a 1.0).
+     * @return O objeto {@link Color} resultante.
+     */
     private Color interpolarCor(double pct) {
         if (pct > 0.5) {
             double t = (pct - 0.5) * 2.0;
@@ -448,6 +516,9 @@ public class Game_View extends StackPane {
         }
     }
 
+    /**
+     * Atualiza e renderiza todos os disparos efetuados pelo jogador e em trânsito.
+     */
     private void atualizarProjetisJogador() {
         campoJogo.getChildren().removeIf(n -> "projetil_j".equals(n.getUserData()));
 
@@ -474,6 +545,10 @@ public class Game_View extends StackPane {
         }
     }
 
+    /**
+     * Atualiza e renderiza todos os disparos efetuados pelos inimigos.
+     * Diferencia visualmente disparos em "ZigZag" de disparos retos.
+     */
     private void atualizarProjetisInimigos() {
         campoJogo.getChildren().removeIf(n -> "projetil_i".equals(n.getUserData()));
 
@@ -515,6 +590,9 @@ public class Game_View extends StackPane {
     //  HUD
     // =========================================================
 
+    /**
+     * Atualiza os textos de informação do cabeçalho de jogo (pontuação, recorde e vaga).
+     */
     private void atualizarHUD() {
         txtScore.setText(String.format("%06d", modelo.getJogador().getPontuacao()));
         txtHiScore.setText(String.format("%06d", modelo.gethiScore()));
@@ -526,6 +604,9 @@ public class Game_View extends StackPane {
     //  OVERLAY DE VAGA CONCLUÍDA
     // =========================================================
 
+    /**
+     * Gere a visibilidade e o conteúdo textual do painel central apresentado quando uma vaga é derrotada.
+     */
     private void atualizarOverlayVaga() {
         boolean mostrar = modelo.getEstado() == EstadoJogo.TRANSICAO_VAGA;
         overlayVaga.setVisible(mostrar);
@@ -547,6 +628,10 @@ public class Game_View extends StackPane {
     //  TRANSIÇÕES
     // =========================================================
 
+    /**
+     * Monitoriza se o jogo necessita de mudar de estado e aplica a navegação ou pausa correspondente,
+     * como finalizar o jogo (Game Over) ou preparar o temporizador para a próxima vaga.
+     */
     private void verificarTransicoes() {
         EstadoJogo estado = modelo.getEstado();
 
@@ -573,6 +658,17 @@ public class Game_View extends StackPane {
     //  UTILITÁRIOS
     // =========================================================
 
+    /**
+     * Helper Method: Cria e devolve um elemento de texto customizado para uso no HUD (cabeçalho).
+     *
+     * @param conteudo Texto a ser exibido.
+     * @param x Posição em X.
+     * @param y Posição em Y.
+     * @param cor Cor do texto.
+     * @param tamanho Tamanho da fonte.
+     * @param bold Define se o texto será em negrito (true/false).
+     * @return Elemento {@link Text} configurado.
+     */
     private Text criarTextoHUD(String conteudo, double x, double y, Color cor, int tamanho, boolean bold) {
         Text t = new Text(conteudo);
         t.setFont(bold
@@ -584,16 +680,31 @@ public class Game_View extends StackPane {
         return t;
     }
 
+    /**
+     * Helper Method: Cria um campo de texto formatado e escondido por norma, projetado para
+     * notificações do ecrã de centro/overlay.
+     *
+     * @param conteudo O texto principal.
+     * @param tamanho Tamanho da fonte.
+     * @param corHex Cor em notação hexadecimal.
+     * @param y Posição em Y.
+     * @return Elemento {@link Text} construído.
+     */
     private Text criarTextoOverlay(String conteudo, int tamanho, String corHex, double y) {
         Text t = new Text(conteudo);
         t.setFont(Font.font("Monospace", FontWeight.BOLD, tamanho));
         t.setFill(Color.web(corHex));
         t.setY(y);
         t.setVisible(false);
-        // APAGAR A LINHA QUE ESTAVA AQUI!
         return t;
     }
 
+    /**
+     * Ajusta a posição X de um texto no ecrã de forma a que este fique centralizado horizontalmente.
+     *
+     * @param t O componente de texto ({@link Text}) a centralizar.
+     * @param y A posição vertical onde deverá ser fixado.
+     */
     private void centrarTexto(Text t, double y) {
         t.setX((LARGURA - t.getText().length() * 8.5) / 2);
         t.setY(y);

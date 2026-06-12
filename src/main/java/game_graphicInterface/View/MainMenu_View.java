@@ -11,12 +11,33 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.shape.SVGPath;
 
+/**
+ * Classe responsável pela interface visual do Menu Principal do jogo.
+ *
+ * <p>Estende {@link StackPane} e exibe o título do jogo ("SYNTHETIC OCEANS"),
+ * elementos decorativos (submarinos com efeito neon desenhados via SVG) e os
+ * botões de navegação principais (Iniciar Jogo, Classificações, Opções e Sair).</p>
+ */
 public class MainMenu_View extends StackPane {
+
+    /** Botão para transitar para o ecrã de jogo e iniciar uma nova partida. */
     private final Button btnIniciar;
+
+    /** Botão para aceder ao ecrã de melhores pontuações. */
     private final Button btnClassificacoes;
+
+    /** Botão para encerrar a aplicação. */
     private final Button btnSair;
+
+    /** Botão para aceder ao menu de opções/controlos. */
     private final Button btnControlos;
 
+    /**
+     * Construtor da classe {@code MainMenu_View}.
+     * <p>Inicializa a cor de fundo, compõe a estrutura visual com o título
+     * estilizado, posiciona os submarinos decorativos nos cantos do ecrã
+     * e organiza os botões num contentor centralizado.</p>
+     */
     public MainMenu_View() {
         this.setStyle("-fx-background-color: #000814;");
 
@@ -61,7 +82,12 @@ public class MainMenu_View extends StackPane {
     }
 
     /**
-     * Desenha um submarino neon usando formas geométricas do JavaFX.
+     * Constrói e desenha um elemento decorativo em forma de submarino.
+     * <p>Utiliza um {@link SVGPath} para traçar os contornos baseados em
+     * coordenadas matemáticas vetoriais, resultando num design angular e "Sci-Fi".
+     * Aplica também um efeito de sombra projetada (DropShadow) para simular o brilho neon.</p>
+     *
+     * @return Um {@link Group} contendo a forma do submarino estilizada.
      */
     private Group criarSubmarinoNeon() {
         Group sub = new Group();
@@ -106,6 +132,14 @@ public class MainMenu_View extends StackPane {
         return sub;
     }
 
+    /**
+     * Cria e estiliza um botão padronizado com efeito visual neon para o menu principal.
+     * Inclui a configuração de transição visual quando o cursor passa sobre o botão.
+     *
+     * @param texto   O texto visível a apresentar no botão.
+     * @param corNeon A cor hexadecimal (ex: "#00f5ff") aplicada ao bordo e texto.
+     * @return Uma instância de {@link Button} totalmente configurada e com interatividade.
+     */
     private Button criarBotao(String texto, String corNeon) {
         Button btn = new Button(texto);
         btn.setPrefWidth(280);
@@ -138,8 +172,27 @@ public class MainMenu_View extends StackPane {
         return btn;
     }
 
+    /**
+     * Obtém o botão responsável por iniciar o jogo.
+     * @return O {@link Button} "INICIAR JOGO".
+     */
     public Button getBtnIniciar() { return btnIniciar; }
+
+    /**
+     * Obtém o botão responsável por aceder às classificações.
+     * @return O {@link Button} "CLASSIFICAÇÕES".
+     */
     public Button getBtnClassificacoes() { return btnClassificacoes; }
+
+    /**
+     * Obtém o botão responsável por encerrar a aplicação.
+     * @return O {@link Button} "SAIR".
+     */
     public Button getBtnSair() { return btnSair; }
-    public Button getBtnControlos(){return  btnControlos;}
+
+    /**
+     * Obtém o botão responsável por aceder ao menu de opções/controlos.
+     * @return O {@link Button} "OPÇÕES".
+     */
+    public Button getBtnControlos() { return btnControlos; }
 }

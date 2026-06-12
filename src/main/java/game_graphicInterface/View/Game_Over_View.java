@@ -52,15 +52,14 @@ public class Game_Over_View extends StackPane {
 
         // Ações dos botões — registam a pontuação antes de navegar
         btnJogarNovamente.setOnAction(e -> {
-            registar(modeloJogo, campoIniciais);
             manager.iniciar();
         });
         btnMenu.setOnAction(e -> {
-            registar(modeloJogo, campoIniciais);
             manager.mostrarMenu();
         });
         btnGuardar.setOnAction(e -> {
             registar(modeloJogo, campoIniciais);
+            MelhoresPontuacoes.salvarNoDisco();
             btnGuardar.setText("✔ GUARDADO");
             btnGuardar.setDisable(true);
         });
